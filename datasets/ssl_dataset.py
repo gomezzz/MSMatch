@@ -7,6 +7,7 @@ from torch.utils.data.sampler import BatchSampler
 from .augmentation.randaugment import RandAugment
 from .data_utils import get_sampler_by_name, get_data_loader, get_onehot, split_ssl_data
 from .dataset import BasicDataset
+from .ucm_dataset import UCMDataset
 
 import torchvision
 from torchvision import datasets, transforms
@@ -14,9 +15,11 @@ from torchvision import datasets, transforms
 mean, std = {}, {}
 mean['cifar10'] = [x / 255 for x in [125.3, 123.0, 113.9]]
 mean['cifar100'] = [x / 255 for x in [129.3, 124.1, 112.4]]
+mean['ucm'] = [x / 255 for x in [123.58113728, 125.08415423, 115.0754208 ]]
 
 std['cifar10'] = [x / 255 for x in [63.0, 62.1, 66.7]]
 std['cifar100'] = [x / 255 for x in [68.2,  65.4,  70.4]]
+std['ucm'] = [x / 255 for x in [55.40512165, 51.34108472, 49.80905244]]
 
 
 def get_transform(mean, std, train=True):
@@ -59,8 +62,11 @@ class SSL_Dataset:
         """
         get_data returns data (images) and targets (labels)
         """
-        dset = getattr(torchvision.datasets, self.name.upper())
-        dset = dset(self.data_dir, train=self.train, download=True)
+        if self.name in ["cifar10","cifar100"]:
+            dset = getattr(torchvision.datasets, self.name.upper())
+            dset = dset(self.data_dir, train=self.train, download=True)
+        elif self.name == "ucm":
+            dset = UCMDataset(train=self.train)
         data, targets = dset.data, dset.targets
         return data, targets
     
