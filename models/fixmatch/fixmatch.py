@@ -110,7 +110,7 @@ class FixMatch:
         
         total_epochs = args.num_train_iter // args.num_eval_iter
         curr_epoch = 0
-        progressbar = tqdm(desc=f"Epoch {curr_epoch+1}/{total_epochs}", total= args.num_eval_iter)
+        progressbar = tqdm(desc=f"Epoch {curr_epoch}/{total_epochs}", total= args.num_eval_iter)
 
 
         start_batch.record()
@@ -203,7 +203,7 @@ class FixMatch:
                 
                 self.print_fn(f"{self.it} iteration, USE_EMA: {hasattr(self, 'eval_model')}, {tb_dict}, BEST_EVAL_ACC: {best_eval_acc}, at {best_it} iters")
 
-                progressbar = tqdm(desc=f"Epoch {curr_epoch+1}/{total_epochs}", total= args.num_eval_iter)
+                progressbar = tqdm(desc=f"Epoch {curr_epoch}/{total_epochs}", total= args.num_eval_iter)
             
             if not args.multiprocessing_distributed or \
                     (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
