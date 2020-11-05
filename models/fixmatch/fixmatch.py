@@ -6,6 +6,7 @@ from torch.cuda.amp import autocast, GradScaler
 
 import os
 import contextlib
+from tqdm import tqdm
 from train_utils import AverageMeter
 
 from .fixmatch_utils import consistency_loss, Get_Scalar
@@ -91,7 +92,7 @@ class FixMatch:
         self.scheduler = scheduler
     
     
-    def train(self, args, logger=None):
+    def train(self, args, logger=None, progressbar=None):
         """
         Train function of FixMatch.
         From data_loader, it inference training data, computes losses, and update the networks.
@@ -107,6 +108,11 @@ class FixMatch:
         start_run = torch.cuda.Event(enable_timing=True)
         end_run = torch.cuda.Event(enable_timing=True)
         
+        total_epochs = args.num_train_iter // args.num_eval_iter
+        curr_epoch = 0
+        progressbar = tqdm(desc=f"Epoch {curr_epoch+1}/{total_epochs}", total= args.num_eval_iter)
+
+
         start_batch.record()
         best_eval_acc, best_it = 0.0, 0
         
@@ -179,8 +185,13 @@ class FixMatch:
             tb_dict['train/prefetch_time'] = start_batch.elapsed_time(end_batch)/1000.
             tb_dict['train/run_time'] = start_run.elapsed_time(end_run)/1000.
             
+            progressbar.set_postfix_str(f"Total Loss={total_loss.detach():.3e}")
+            progressbar.update(1)
             
             if self.it % self.num_eval_iter == 0:
+                progressbar.close()
+                curr_epoch += 1
+
                 eval_dict = self.evaluate(args=args)
                 tb_dict.update(eval_dict)
                 
@@ -191,6 +202,8 @@ class FixMatch:
                     best_it = self.it
                 
                 self.print_fn(f"{self.it} iteration, USE_EMA: {hasattr(self, 'eval_model')}, {tb_dict}, BEST_EVAL_ACC: {best_eval_acc}, at {best_it} iters")
+
+                progressbar = tqdm(desc=f"Epoch {curr_epoch+1}/{total_epochs}", total= args.num_eval_iter)
             
             if not args.multiprocessing_distributed or \
                     (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
