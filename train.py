@@ -97,7 +97,8 @@ def main_worker(gpu, ngpus_per_node, args):
     logger_level = "WARNING"
     tb_log = None
     if args.rank % ngpus_per_node == 0:
-        tb_log = TBLog(save_path, 'tensorboard')
+        dir_name='FixMatch_arch'+args.net+'_batch'+str(args.batch_size)+'_confidence'+str(args.p_cutoff).replace('.','')+'_lr'+str(args.lr).replace('.','')+'_nclass'+str(args.num_classes)+'_uratio'+str(args.uratio)+'_wd'+str(args.weight_decay).replace('.','')+'_wu'+str(args.ulb_loss_ratio).replace('.','')+'_seed'+str(args.seed)
+        tb_log = TBLog(save_path, dir_name)
         logger_level = "INFO"
     
     logger = get_logger(args.save_name, save_path, logger_level)
