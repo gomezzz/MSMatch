@@ -146,7 +146,7 @@ def ce_loss(logits, targets, use_hard_labels=True, reduction='none'):
         use_hard_labels: If True, targets have [Batch size] shape with int values. If False, the target is vector (default True)
     """
     if use_hard_labels:
-        return F.cross_entropy(logits, targets, reduction=reduction)
+        return F.cross_entropy(logits, targets.long(), reduction=reduction)
     else:
         assert logits.shape == targets.shape
         log_pred = F.log_softmax(logits, dim=-1)
