@@ -10,7 +10,7 @@ from tqdm import tqdm
 from train_utils import AverageMeter
 
 from .fixmatch_utils import consistency_loss, Get_Scalar
-from train_utils import ce_loss
+from train_utils import ce_loss, accuracy
 
 
 
@@ -149,6 +149,8 @@ class FixMatch:
                 T = self.t_fn(self.it)
                 p_cutoff = self.p_fn(self.it)
 
+                train_accuracy = accuracy(logits_x_lb, y_lb)
+                train_accuracy = train_accuracy[0]
                 sup_loss = ce_loss(logits_x_lb, y_lb, reduction='mean')
                 unsup_loss, mask = consistency_loss(logits_x_ulb_w, 
                                               logits_x_ulb_s, 
@@ -184,6 +186,7 @@ class FixMatch:
             tb_dict['lr'] = self.optimizer.param_groups[0]['lr']
             tb_dict['train/prefetch_time'] = start_batch.elapsed_time(end_batch)/1000.
             tb_dict['train/run_time'] = start_run.elapsed_time(end_run)/1000.
+            tb_dict['train/top-1-acc'] = train_accuracy 
             
             progressbar.set_postfix_str(f"Total Loss={total_loss.detach():.3e}")
             progressbar.update(1)
