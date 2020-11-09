@@ -3,27 +3,31 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 import logging
 
+
 def setattr_cls_from_kwargs(cls, kwargs):
-    #if default values are in the cls,
-    #overlap the value by kwargs
+    # if default values are in the cls,
+    # overlap the value by kwargs
     for key in kwargs.keys():
         if hasattr(cls, key):
-            print(f"{key} in {cls} is overlapped by kwargs: {getattr(cls,key)} -> {kwargs[key]}")
+            print(
+                f"{key} in {cls} is overlapped by kwargs: {getattr(cls,key)} -> {kwargs[key]}"
+            )
         setattr(cls, key, kwargs[key])
 
-        
+
 def test_setattr_cls_from_kwargs():
     class _test_cls:
         def __init__(self):
             self.a = 1
-            self.b = 'hello'
+            self.b = "hello"
+
     test_cls = _test_cls()
-    config = {'a': 3, 'b': 'change_hello', 'c':5}
+    config = {"a": 3, "b": "change_hello", "c": 5}
     setattr_cls_from_kwargs(test_cls, config)
     for key in config.keys():
         print(f"{key}:\t {getattr(test_cls, key)}")
-        
-        
+
+
 def net_builder(net_name, from_name: bool, net_conf=None):
     """
     return **class** of backbone network (not instance).
@@ -34,49 +38,62 @@ def net_builder(net_name, from_name: bool, net_conf=None):
     """
     if from_name:
         import torchvision.models as models
-        model_name_list = sorted(name for name in models.__dict__
-                                if name.islower() and not name.startswith("__")
-                                and callable(models.__dict__[name]))
+
+        model_name_list = sorted(
+            name
+            for name in models.__dict__
+            if name.islower()
+            and not name.startswith("__")
+            and callable(models.__dict__[name])
+        )
 
         if net_name not in model_name_list:
-            assert Exception(f"[!] Networks\' Name is wrong, check net config, \
+            assert Exception(
+                f"[!] Networks' Name is wrong, check net config, \
                                expected: {model_name_list}  \
-                               received: {net_name}")
+                               received: {net_name}"
+            )
         else:
             return models.__dict__[net_name]
-        
+
     else:
-        if net_name == 'WideResNet':
+        if net_name == "WideResNet":
             import models.nets.wrn as net
-            builder = getattr(net, 'build_WideResNet')()
+
+            builder = getattr(net, "build_WideResNet")()
+            setattr_cls_from_kwargs(builder, net_conf)
+            return builder.build
+        elif net_name == "efficientNet":
+            from efficientnet_pytorch import EfficientNet
+
+            return lambda num_classes: EfficientNet.from_name(
+                "efficientnet-b0", num_classes=num_classes
+            )
         else:
             assert Exception("Not Implemented Error")
-            
-        setattr_cls_from_kwargs(builder, net_conf)
-        return builder.build
 
-    
+
 def test_net_builder(net_name, from_name, net_conf=None):
     builder = net_builder(net_name, from_name, net_conf)
     print(f"net_name: {net_name}, from_name: {from_name}, net_conf: {net_conf}")
     print(builder)
 
-    
-def get_logger(name, save_path=None, level='INFO'):
+
+def get_logger(name, save_path=None, level="INFO"):
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level))
-    
-    log_format = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s')
+
+    log_format = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
     streamHandler = logging.StreamHandler()
     streamHandler.setFormatter(log_format)
     logger.addHandler(streamHandler)
-    
+
     if not save_path is None:
         os.makedirs(save_path, exist_ok=True)
-        fileHandler = logging.FileHandler(os.path.join(save_path, 'log.txt'))
+        fileHandler = logging.FileHandler(os.path.join(save_path, "log.txt"))
         fileHandler.setFormatter(log_format)
         logger.addHandler(fileHandler)
-    
+
     return logger
 
 
