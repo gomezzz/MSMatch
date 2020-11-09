@@ -44,6 +44,16 @@ def get_transform(mean, std, train=True):
         )
 
 
+def get_inverse_transform(mean, std):
+    mean = torch.as_tensor(mean)
+    std = torch.as_tensor(std)
+    std_inv = 1 / (std + 1e-7)
+    mean_inv = -mean * std_inv
+    return transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize(mean_inv, std_inv)]
+    )
+
+
 class SSL_Dataset:
     """
     SSL_Dataset class gets dataset (cifar10, cifar100) from torchvision.datasets,
@@ -65,6 +75,7 @@ class SSL_Dataset:
         self.data_dir = data_dir
         self.num_classes = num_classes
         self.transform = get_transform(mean[name], std[name], train)
+        self.inv_transform = get_inverse_transform(mean[name], std[name])
 
     def get_data(self):
         """
@@ -79,6 +90,12 @@ class SSL_Dataset:
             dset = AIDDataset(train=self.train)
         elif self.name == "eurosat_rgb":
             dset = EurosatRGBDataset(train=self.train)
+
+        if self.name in ["cifar10", "cifar100"]:
+            self.label_encoding = None
+        else:
+            self.label_encoding = dset.label_encoding
+
         data, targets = dset.data, dset.targets
         return data, targets
 
