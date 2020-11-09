@@ -49,9 +49,23 @@ def net_builder(net_name, from_name: bool, net_conf=None):
         if net_name == 'WideResNet':
             import models.nets.wrn as net
             builder = getattr(net, 'build_WideResNet')()
+        elif net_name == 'efficientNet':
+            from efficientnet_pytorch import EfficientNet
+            
+            class build_EfficientNet:
+                def __init__(self, submodule='efficientnet-b0'):
+                    self.submodule = submodule
+                    
+                
+                def build(self, num_classes):
+                    model = EfficientNet.from_name('efficientnet-b0')
+                    return model
+                        
+            builder = build_EfficientNet()        
         else:
             assert Exception("Not Implemented Error")
-            
+                
+        print(builder)
         setattr_cls_from_kwargs(builder, net_conf)
         return builder.build
 
