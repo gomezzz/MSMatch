@@ -15,15 +15,19 @@ class BasicDataset(Dataset):
     This class supports strong augmentation for Fixmatch,
     and return both weakly and strongly augmented images.
     """
-    def __init__(self,
-                 data,
-                 targets=None,
-                 num_classes=None,
-                 transform=None,
-                 use_strong_transform=False,
-                 strong_transform=None,
-                 onehot=False,
-                 *args, **kwargs):
+
+    def __init__(
+        self,
+        data,
+        targets=None,
+        num_classes=None,
+        transform=None,
+        use_strong_transform=False,
+        strong_transform=None,
+        onehot=False,
+        *args,
+        **kwargs
+    ):
         """
         Args
             data: x_data
@@ -37,20 +41,19 @@ class BasicDataset(Dataset):
         super(BasicDataset, self).__init__()
         self.data = data
         self.targets = targets
-        
+
         self.num_classes = num_classes
         self.use_strong_transform = use_strong_transform
         self.onehot = onehot
-        
+
         self.transform = transform
         if use_strong_transform:
             if strong_transform is None:
                 self.strong_transform = copy.deepcopy(transform)
-                self.strong_transform.transforms.insert(0, RandAugment(3,5))
+                self.strong_transform.transforms.insert(0, RandAugment(3, 5))
         else:
             self.strong_transform = strong_transform
-                
-    
+
     def __getitem__(self, idx):
         """
         If strong augmentation is not used,
@@ -58,16 +61,18 @@ class BasicDataset(Dataset):
         else:
             return weak_augment_image, strong_augment_image, target
         """
-        
-        #set idx-th target
+
+        # set idx-th target
         if self.targets is None:
             target = None
         else:
             target_ = self.targets[idx]
-            target = target_ if not self.onehot else get_onehot(self.num_classes, target_)
-            
-        #set augmented images
-            
+            target = (
+                target_ if not self.onehot else get_onehot(self.num_classes, target_)
+            )
+
+        # set augmented images
+
         img = self.data[idx]
         if self.transform is None:
             return transforms.ToTensor()(img), target
@@ -80,6 +85,5 @@ class BasicDataset(Dataset):
             else:
                 return img_w, self.strong_transform(img), target
 
-    
     def __len__(self):
         return len(self.data)

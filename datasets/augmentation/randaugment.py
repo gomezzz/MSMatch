@@ -49,11 +49,10 @@ def Posterize(img, v):  # [4, 8]
 
 
 def Rotate(img, v):  # [-30, 30]
-    #assert -30 <= v <= 30
-    #if random.random() > 0.5:
+    # assert -30 <= v <= 30
+    # if random.random() > 0.5:
     #    v = -v
     return img.rotate(v)
-
 
 
 def Sharpness(img, v):  # [0.1,1.9]
@@ -62,45 +61,45 @@ def Sharpness(img, v):  # [0.1,1.9]
 
 
 def ShearX(img, v):  # [-0.3, 0.3]
-    #assert -0.3 <= v <= 0.3
-    #if random.random() > 0.5:
+    # assert -0.3 <= v <= 0.3
+    # if random.random() > 0.5:
     #    v = -v
     return img.transform(img.size, PIL.Image.AFFINE, (1, v, 0, 0, 1, 0))
 
 
 def ShearY(img, v):  # [-0.3, 0.3]
-    #assert -0.3 <= v <= 0.3
-    #if random.random() > 0.5:
+    # assert -0.3 <= v <= 0.3
+    # if random.random() > 0.5:
     #    v = -v
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, v, 1, 0))
 
 
 def TranslateX(img, v):  # [-150, 150] => percentage: [-0.45, 0.45]
-    #assert -0.3 <= v <= 0.3
-    #if random.random() > 0.5:
+    # assert -0.3 <= v <= 0.3
+    # if random.random() > 0.5:
     #    v = -v
     v = v * img.size[0]
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0))
 
 
 def TranslateXabs(img, v):  # [-150, 150] => percentage: [-0.45, 0.45]
-    #assert v >= 0.0
-    #if random.random() > 0.5:
+    # assert v >= 0.0
+    # if random.random() > 0.5:
     #    v = -v
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0))
 
 
 def TranslateY(img, v):  # [-150, 150] => percentage: [-0.45, 0.45]
-    #assert -0.3 <= v <= 0.3
-    #if random.random() > 0.5:
+    # assert -0.3 <= v <= 0.3
+    # if random.random() > 0.5:
     #    v = -v
     v = v * img.size[1]
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v))
 
 
 def TranslateYabs(img, v):  # [-150, 150] => percentage: [-0.45, 0.45]
-    #assert 0 <= v
-    #if random.random() > 0.5:
+    # assert 0 <= v
+    # if random.random() > 0.5:
     #    v = -v
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v))
 
@@ -110,9 +109,9 @@ def Solarize(img, v):  # [0, 256]
     return PIL.ImageOps.solarize(img, v)
 
 
-def Cutout(img, v):  #[0, 60] => percentage: [0, 0.2] => change to [0, 0.5]
+def Cutout(img, v):  # [0, 60] => percentage: [0, 0.2] => change to [0, 0.5]
     assert 0.0 <= v <= 0.5
-    if v <= 0.:
+    if v <= 0.0:
         return img
 
     v = v * img.size[0]
@@ -127,8 +126,8 @@ def CutoutAbs(img, v):  # [0, 60] => percentage: [0, 0.2]
     x0 = np.random.uniform(w)
     y0 = np.random.uniform(h)
 
-    x0 = int(max(0, x0 - v / 2.))
-    y0 = int(max(0, y0 - v / 2.))
+    x0 = int(max(0, x0 - v / 2.0))
+    y0 = int(max(0, y0 - v / 2.0))
     x1 = min(w, x0 + v)
     y1 = min(h, y0 + v)
 
@@ -139,8 +138,8 @@ def CutoutAbs(img, v):  # [0, 60] => percentage: [0, 0.2]
     PIL.ImageDraw.Draw(img).rectangle(xy, color)
     return img
 
-    
-def augment_list():  
+
+def augment_list():
     l = [
         (AutoContrast, 0, 1),
         (Brightness, 0.05, 0.95),
@@ -155,31 +154,29 @@ def augment_list():
         (ShearY, -0.3, 0.3),
         (Solarize, 0, 256),
         (TranslateX, -0.3, 0.3),
-        (TranslateY, -0.3, 0.3)
+        (TranslateY, -0.3, 0.3),
     ]
     return l
 
-    
+
 class RandAugment:
     def __init__(self, n, m):
         self.n = n
-        self.m = m      # [0, 30] in fixmatch, deprecated.
+        self.m = m  # [0, 30] in fixmatch, deprecated.
         self.augment_list = augment_list()
 
-        
     def __call__(self, img):
         ops = random.choices(self.augment_list, k=self.n)
         for op, min_val, max_val in ops:
-            val = min_val + float(max_val - min_val)*random.random()
-            img = op(img, val) 
-        cutout_val = random.random() * 0.5 
-        img = Cutout(img, cutout_val) #for fixmatch
+            val = min_val + float(max_val - min_val) * random.random()
+            img = op(img, val)
+        cutout_val = random.random() * 0.5
+        img = Cutout(img, cutout_val)  # for fixmatch
         return img
 
-    
-if __name__ == '__main__':
-    randaug = RandAugment(3,5)
+
+if __name__ == "__main__":
+    randaug = RandAugment(3, 5)
     print(randaug)
     for item in randaug.augment_list:
         print(item)
-    

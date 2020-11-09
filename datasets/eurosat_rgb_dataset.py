@@ -96,4 +96,3 @@ class EurosatRGBDataset(torch.utils.data.Dataset):
             img = self.transform(img)
 
         return img, self.targets[idx]
-

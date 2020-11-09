@@ -23,8 +23,10 @@ class DistributedProxySampler(DistributedSampler):
         rank (optional): Rank of the current process within num_replicas.
     """
 
-    def __init__(self, sampler, num_replicas=None, rank=None):        
-        super(DistributedProxySampler, self).__init__(sampler, num_replicas=num_replicas, rank=rank, shuffle=False)
+    def __init__(self, sampler, num_replicas=None, rank=None):
+        super(DistributedProxySampler, self).__init__(
+            sampler, num_replicas=num_replicas, rank=rank, shuffle=False
+        )
         self.sampler = sampler
 
     def __iter__(self):
@@ -33,12 +35,12 @@ class DistributedProxySampler(DistributedSampler):
         indices = list(self.sampler)
 
         # add extra samples to make it evenly divisible
-        indices += indices[:(self.total_size - len(indices))]
+        indices += indices[: (self.total_size - len(indices))]
         if len(indices) != self.total_size:
             raise RuntimeError("{} vs {}".format(len(indices), self.total_size))
 
         # subsample
-        indices = indices[self.rank:self.total_size:self.num_replicas]
+        indices = indices[self.rank : self.total_size : self.num_replicas]
         if len(indices) != self.num_samples:
             raise RuntimeError("{} vs {}".format(len(indices), self.num_samples))
 
