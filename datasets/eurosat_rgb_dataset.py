@@ -10,12 +10,10 @@ import torch
 from tqdm import tqdm
 
 
-class UCMDataset(torch.utils.data.Dataset):
-    """UCM dataset."""
+class EurosatRGBDataset(torch.utils.data.Dataset):
+    """EurosatRGB dataset"""
 
-    def __init__(
-        self, train, root_dir="data/UCMerced_LandUse/Images/", transform=None, seed=42
-    ):
+    def __init__(self, train, root_dir="data/EuroSAT_RGB/", transform=None, seed=42):
         """
         Args:
             train (bool): If true returns training set, else test
@@ -25,16 +23,16 @@ class UCMDataset(torch.utils.data.Dataset):
             seed (int): seed used for train/test split
         """
         self.seed = seed
-        self.size = [256, 256]
+        self.size = [64, 64]
         self.root_dir = root_dir
         self.transform = transform
-        self.test_ratio = 0.2
-        self.N = 2100
+        self.test_ratio = 0.1
         self.train = train
+        self.N = 27000
         self._load_data()
 
     def _load_data(self):
-        """Loads the data from the passed root directory. Splits in test/train based on seed.
+        """Loads the data from the passed root directory. Splits in test/train based on seed. By default resized to 256,256
         """
         images = np.zeros([self.N, self.size[0], self.size[1], 3], dtype="uint8")
         labels = []

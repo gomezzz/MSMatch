@@ -10,11 +10,11 @@ import torch
 from tqdm import tqdm
 
 
-class UCMDataset(torch.utils.data.Dataset):
-    """UCM dataset."""
+class AIDDataset(torch.utils.data.Dataset):
+    """AID dataset. By default resized to 256,256"""
 
     def __init__(
-        self, train, root_dir="data/UCMerced_LandUse/Images/", transform=None, seed=42
+        self, train, root_dir="data/AID/", transform=None, seed=42, resize_to=(256, 256)
     ):
         """
         Args:
@@ -23,18 +23,19 @@ class UCMDataset(torch.utils.data.Dataset):
             transform (callable, optional): Optional transform to be applied
                 on a sample.
             seed (int): seed used for train/test split
+            resize_to (int tuple): target (width,height)
         """
         self.seed = seed
-        self.size = [256, 256]
+        self.size = resize_to
         self.root_dir = root_dir
         self.transform = transform
-        self.test_ratio = 0.2
-        self.N = 2100
+        self.test_ratio = 0.1
+        self.N = 10000
         self.train = train
         self._load_data()
 
     def _load_data(self):
-        """Loads the data from the passed root directory. Splits in test/train based on seed.
+        """Loads the data from the passed root directory. Splits in test/train based on seed. By default resized to 256,256
         """
         images = np.zeros([self.N, self.size[0], self.size[1], 3], dtype="uint8")
         labels = []
