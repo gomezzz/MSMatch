@@ -127,7 +127,7 @@ def main_worker(gpu, ngpus_per_node, args):
                      logger=logger)
 
     logger.info(f'Number of Trainable Params: {count_parameters(model.train_model)}')
-        
+    logger.info(model.train_model) 
 
     # SET Optimizer & LR Scheduler
     ## construct SGD and cosine lr scheduler
