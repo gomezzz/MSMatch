@@ -1,0 +1,15 @@
+name: torchmatch
+channels:
+- conda-forge
+- pytorch
+dependencies:
+- python=3.8
+- pytorch=1.7
+- torchvision
+- tensorboard=2.3.0
+- pillow
+- tqdm
+- numpy
+- scikit-image
+- scikit-learn
+- imageio
