@@ -14,3 +14,4 @@ dependencies:
 - scikit-learn
 - imageio
 - efficientnet-pytorch
+- pandas

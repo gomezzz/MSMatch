@@ -1,4 +1,4 @@
-import os
+import os, glob
 import time
 from torch.utils.tensorboard import SummaryWriter
 import logging
@@ -99,8 +99,8 @@ def get_logger(name, save_path=None, level="INFO"):
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
-    
-    
+  
+
 def create_dir_str(args):
     dir_name = (
            args.dataset
@@ -126,3 +126,59 @@ def create_dir_str(args):
            + str(args.num_labels)
        )
     return dir_name
+
+
+def get_model_checkpoints(folderpath):
+    """Returns all the latest checkpoint files and used parameters in the below folders
+
+    Args:
+        folderpath (str): path to search (note only depth 1 below will be searched.)
+
+    Returns:
+        list,list: lists of checkpoint names and associated parameters
+    """
+    # Find present models
+    folderpath = folderpath.replace("\\", "/")
+    model_files = glob.glob(folderpath + "/**/*.pth", recursive=True)
+    folders = [model_file.split("model_best.pth")[0] for model_file in model_files]
+
+    checkpoints = []
+    params = []
+    for file, folder in zip(model_files, folders):
+        checkpoints.append(file)
+        params.append(decode_parameters_from_path(folder))
+
+    return checkpoints, params
+
+
+def decode_parameters_from_path(filepath):
+    """Decodes the parameters encoded in the filepath to a checkpoint
+
+    Args:
+        filepath (str): full path to checkpoint folder
+
+    Returns:
+        dict: dictionary with all parameters
+    """
+    params = {}
+
+    filepath = filepath.replace("\\", "/")
+    filepath = filepath.split("/")
+
+    param_string = filepath[-2]
+    param_string = param_string.split("_")
+
+    params["dataset"] = filepath[-3]
+    params["net"] = param_string[1][4:]
+    params["batch"] = int(param_string[2][5:])
+    params["confidence"] = float(param_string[3][10:])
+    # params["filters"] = int(param_string[4][7:])
+    params["lr"] = float(param_string[4][2:])
+    params["num_classes"] = int(param_string[5][6:])
+    params["uratio"] = int(param_string[6][6:])
+    params["wd"] = float(param_string[7][2:])
+    params["wu"] = float(param_string[8][2:])
+    params["seed"] = float(param_string[9][4:])
+
+    return params
+
