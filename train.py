@@ -13,7 +13,7 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 
 from utils import net_builder, get_logger, count_parameters, create_dir_str
-from train_utils import TBLog, get_SGD, get_cosine_schedule_with_warmup
+from train_utils import TBLog, get_OPT, get_cosine_schedule_with_warmup
 from models.fixmatch.fixmatch import FixMatch
 from datasets.ssl_dataset import SSL_Dataset
 from datasets.data_utils import get_data_loader
@@ -24,16 +24,22 @@ def main(args):
     For (Distributed)DataParallelism,
     main(args) spawn each process (main_worker) to each GPU.
     """
-    
-    default_num_class_dict = {'cifar_10' : 10, 'cifar_100' : 100, 'ucm' : 21, 'eurosat_rgb' : 10, 'aid' : 30}
-    
+
+    default_num_class_dict = {
+        "cifar_10": 10,
+        "cifar_100": 100,
+        "ucm": 21,
+        "eurosat_rgb": 10,
+        "aid": 30,
+    }
+
     if args.num_classes == -1:
-        args.num_classes =  default_num_class_dict[args.dataset]
-    
+        args.num_classes = default_num_class_dict[args.dataset]
+
     dir_name = create_dir_str(args)
-       
+
     args.save_name = os.path.join(args.save_name, dir_name)
-        
+
     save_path = os.path.join(args.save_dir, args.save_name)
     if os.path.exists(save_path) and not args.overwrite:
         raise Exception("already existing model: {}".format(save_path))
@@ -115,7 +121,7 @@ def main_worker(gpu, ngpus_per_node, args):
     logger_level = "WARNING"
     tb_log = None
     if args.rank % ngpus_per_node == 0:
-        tb_log = TBLog(save_path, '')
+        tb_log = TBLog(save_path, "")
         logger_level = "INFO"
 
     logger = get_logger(args.save_name, save_path, logger_level)
@@ -152,9 +158,9 @@ def main_worker(gpu, ngpus_per_node, args):
     logger.info(model.train_model)
 
     # SET Optimizer & LR Scheduler
-    ## construct SGD and cosine lr scheduler
-    optimizer = get_SGD(
-        model.train_model, "SGD", args.lr, args.momentum, args.weight_decay
+    ## construct SGD/ADAM and cosine lr scheduler
+    optimizer = get_OPT(
+        model.train_model, args.opt, args.lr, args.momentum, args.weight_decay
     )
     scheduler = get_cosine_schedule_with_warmup(
         optimizer, args.num_train_iter, num_warmup_steps=args.num_train_iter * 0
@@ -322,6 +328,7 @@ if __name__ == "__main__":
     """
     Optimizer configurations
     """
+    parser.add_argument("--opt", type=str, default="SGD")
     parser.add_argument("--lr", type=float, default=0.03)
     parser.add_argument("--momentum", type=float, default=0.9)
     parser.add_argument("--weight_decay", type=float, default=5e-4)
