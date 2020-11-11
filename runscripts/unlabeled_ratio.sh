@@ -10,7 +10,7 @@ BATCH_SIZE=24          #Batch size to use
 SEED=0
 NUM_LABELS=250                               
 WEIGHT_DECAY=0.0005
-N_EPOCH=32                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
+N_EPOCH=200                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
 NUM_EVAL_ITER=1000            #Number of iterations 
 NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER))
 

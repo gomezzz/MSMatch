@@ -12,7 +12,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from utils import net_builder, get_logger, count_parameters, create_dir
+from utils import net_builder, get_logger, count_parameters, create_dir_str
 from train_utils import TBLog, get_SGD, get_cosine_schedule_with_warmup
 from models.fixmatch.fixmatch import FixMatch
 from datasets.ssl_dataset import SSL_Dataset
@@ -30,7 +30,7 @@ def main(args):
     if args.num_classes == -1:
         args.num_classes =  default_num_class_dict[args.dataset]
     
-    dir_name = create_dir(args)
+    dir_name = create_dir_str(args)
        
     args.save_name = os.path.join(args.save_name, dir_name)
         

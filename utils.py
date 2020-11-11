@@ -101,7 +101,7 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
     
     
-def create_dir(args):
+def create_dir_str(args):
     dir_name = (
            args.dataset
            +"/FixMatch_arch"
@@ -122,5 +122,7 @@ def create_dir(args):
            + str(args.ulb_loss_ratio)
            + "_seed"
            + str(args.seed)
+           + "_num_labels"
+           + str(args.num_labels)
        )
     return dir_name
