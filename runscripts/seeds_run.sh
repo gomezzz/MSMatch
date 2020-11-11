@@ -6,9 +6,9 @@ SAVE_LOCATION="/scratch/fixmatch_results" #Where tensorboard output will be writ
 SAVE_NAME="seeds_run"
 NET=efficientNet                              #Options are wideResNet,efficientNet
 DATASET=eurosat_rgb                          #Dataset to use
-NUM_LABELS=1000
+NUM_LABELS=250
 UNLABELED_RATIO=7
-BATCH_SIZE=16								 #Batch size to use
+BATCH_SIZE=24								 #Batch size to use
 WEIGHT_DECAY=0.0005
 N_EPOCH=32                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
 NUM_EVAL_ITER=1000            #Number of iterations 

@@ -6,9 +6,9 @@ SAVE_LOCATION="/scratch/fixmatch_results" #Where tensorboard output will be writ
 SAVE_NAME="hyperparameters"
 NET=efficientNet                              #Options are wideResNet,efficientNet
 DATASET=eurosat_rgb                          #Dataset to use
-NUM_LABELS=1000
+NUM_LABELS=250
 UNLABELED_RATIO=7
-BATCH_SIZE=16
+BATCH_SIZE=24
 N_EPOCH=32                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
 NUM_EVAL_ITER=1000            #Number of iterations 
 NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER))

@@ -12,7 +12,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from utils import net_builder, get_logger, count_parameters
+from utils import net_builder, get_logger, count_parameters, create_dir
 from train_utils import TBLog, get_SGD, get_cosine_schedule_with_warmup
 from models.fixmatch.fixmatch import FixMatch
 from datasets.ssl_dataset import SSL_Dataset
@@ -30,27 +30,7 @@ def main(args):
     if args.num_classes == -1:
         args.num_classes =  default_num_class_dict[args.dataset]
     
-    dir_name = (
-           args.dataset
-           +"/FixMatch_arch"
-           + args.net
-           + "_batch"
-           + str(args.batch_size)
-           + "_confidence"
-           + str(args.p_cutoff)
-           + "_lr"
-           + str(args.lr)
-           + "_nclass"
-           + str(args.num_classes)
-           + "_uratio"
-           + str(args.uratio)
-           + "_wd"
-           + str(args.weight_decay)
-           + "_wu"
-           + str(args.ulb_loss_ratio)
-           + "_seed"
-           + str(args.seed)
-       )
+    dir_name = create_dir(args)
        
     args.save_name = os.path.join(args.save_name, dir_name)
         

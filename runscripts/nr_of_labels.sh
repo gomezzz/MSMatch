@@ -7,7 +7,7 @@ SAVE_NAME="nr_of_labels"
 NET=efficientNet                              #Options are wideResNet,efficientNet
 DATASET=eurosat_rgb                          #Dataset to use
 SEED=0
-BATCH_SIZE=16
+BATCH_SIZE=24
 UNLABELED_RATIO=7
 WEIGHT_DECAY=0.0005
 N_EPOCH=32                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
