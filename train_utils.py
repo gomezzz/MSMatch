@@ -53,7 +53,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def get_SGD(
+def get_OPT(
     net,
     name="SGD",
     lr=0.1,
@@ -67,25 +67,45 @@ def get_SGD(
     If bn_wd_skip, the optimizer does not apply
     weight decay regularization on parameters in batch normalization.
     """
-    optim = getattr(torch.optim, name)
+    if name == "SGD":
+        decay = []
+        no_decay = []
+        for name, param in net.named_parameters():
+            if ("bn" in name) and bn_wd_skip:
+                no_decay.append(param)
+            else:
+                decay.append(param)
 
-    decay = []
-    no_decay = []
-    for name, param in net.named_parameters():
-        if ("bn" in name) and bn_wd_skip:
-            no_decay.append(param)
-        else:
-            decay.append(param)
+        per_param_args = [{"params": decay}, {"params": no_decay, "weight_decay": 0.0}]
 
-    per_param_args = [{"params": decay}, {"params": no_decay, "weight_decay": 0.0}]
+        optimizer = torch.optim.SGD(
+            per_param_args,
+            lr=lr,
+            momentum=momentum,
+            weight_decay=weight_decay,
+            nesterov=nesterov,
+        )
+    elif name == "Adam" or name == "ADAM":
 
-    optimizer = optim(
-        per_param_args,
-        lr=lr,
-        momentum=momentum,
-        weight_decay=weight_decay,
-        nesterov=nesterov,
-    )
+        if lr > 0.005:
+            raise ValueError(
+                "Learning rate is " + str(lr) + ". That is too high for ADAM."
+            )
+
+        decay = []
+        no_decay = []
+        for name, param in net.named_parameters():
+            if ("bn" in name) and bn_wd_skip:
+                no_decay.append(param)
+            else:
+                decay.append(param)
+
+        per_param_args = [{"params": decay}, {"params": no_decay, "weight_decay": 0.0}]
+
+        optimizer = torch.optim.Adam(
+            per_param_args, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay,
+        )
+
     return optimizer
 
 
