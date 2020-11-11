@@ -122,7 +122,7 @@ def create_dir_str(args):
            + str(args.ulb_loss_ratio)
            + "_seed"
            + str(args.seed)
-           + "_num_labels"
+           + "_numlabels"
            + str(args.num_labels)
        )
     return dir_name
@@ -179,6 +179,7 @@ def decode_parameters_from_path(filepath):
     params["wd"] = float(param_string[7][2:])
     params["wu"] = float(param_string[8][2:])
     params["seed"] = float(param_string[9][4:])
-
+    params["numlabels"] = int(param_string[10][9:])
+    
     return params
 

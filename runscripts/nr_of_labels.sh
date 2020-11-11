@@ -12,7 +12,7 @@ UNLABELED_RATIO=7
 WEIGHT_DECAY=0.0005
 N_EPOCH=200                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
 NUM_EVAL_ITER=1000            #Number of iterations 
-NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER))
+NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER * BATCH_SIZE / 32))
 
 #create save location
 mkdir -p $SAVE_LOCATION

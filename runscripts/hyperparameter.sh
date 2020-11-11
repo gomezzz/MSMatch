@@ -9,9 +9,9 @@ DATASET=eurosat_rgb                          #Dataset to use
 NUM_LABELS=250
 UNLABELED_RATIO=7
 BATCH_SIZE=24
-N_EPOCH=200                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER
+N_EPOCH=200                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER * BATCH_SIZE / 32
 NUM_EVAL_ITER=1000            #Number of iterations 
-NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER))
+NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER * BATCH_SIZE/ 32))
 SEED=0
 
 #create save location
