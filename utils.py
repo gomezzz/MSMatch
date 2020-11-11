@@ -99,6 +99,33 @@ def get_logger(name, save_path=None, level="INFO"):
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+  
+
+def create_dir_str(args):
+    dir_name = (
+           args.dataset
+           +"/FixMatch_arch"
+           + args.net
+           + "_batch"
+           + str(args.batch_size)
+           + "_confidence"
+           + str(args.p_cutoff)
+           + "_lr"
+           + str(args.lr)
+           + "_nclass"
+           + str(args.num_classes)
+           + "_uratio"
+           + str(args.uratio)
+           + "_wd"
+           + str(args.weight_decay)
+           + "_wu"
+           + str(args.ulb_loss_ratio)
+           + "_seed"
+           + str(args.seed)
+           + "_numlabels"
+           + str(args.num_labels)
+       )
+    return dir_name
 
 
 def get_model_checkpoints(folderpath):
@@ -152,6 +179,7 @@ def decode_parameters_from_path(filepath):
     params["wd"] = float(param_string[7][2:])
     params["wu"] = float(param_string[8][2:])
     params["seed"] = float(param_string[9][4:])
-
+    params["numlabels"] = int(param_string[10][9:])
+    
     return params
 

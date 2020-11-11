@@ -12,7 +12,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from utils import net_builder, get_logger, count_parameters
+from utils import net_builder, get_logger, count_parameters, create_dir_str
 from train_utils import TBLog, get_SGD, get_cosine_schedule_with_warmup
 from models.fixmatch.fixmatch import FixMatch
 from datasets.ssl_dataset import SSL_Dataset
@@ -24,7 +24,16 @@ def main(args):
     For (Distributed)DataParallelism,
     main(args) spawn each process (main_worker) to each GPU.
     """
-
+    
+    default_num_class_dict = {'cifar_10' : 10, 'cifar_100' : 100, 'ucm' : 21, 'eurosat_rgb' : 10, 'aid' : 30}
+    
+    if args.num_classes == -1:
+        args.num_classes =  default_num_class_dict[args.dataset]
+    
+    dir_name = create_dir_str(args)
+       
+    args.save_name = os.path.join(args.save_name, dir_name)
+        
     save_path = os.path.join(args.save_dir, args.save_name)
     if os.path.exists(save_path) and not args.overwrite:
         raise Exception("already existing model: {}".format(save_path))
@@ -65,7 +74,6 @@ def main(args):
     if args.multiprocessing_distributed:
         # now, args.world_size means num of total processes in all nodes
         args.world_size = ngpus_per_node * args.world_size
-
         # args=(,) means the arguments of main_worker
         mp.spawn(main_worker, nprocs=ngpus_per_node, args=(ngpus_per_node, args))
     else:
@@ -107,27 +115,7 @@ def main_worker(gpu, ngpus_per_node, args):
     logger_level = "WARNING"
     tb_log = None
     if args.rank % ngpus_per_node == 0:
-        dir_name = (
-            "FixMatch_arch"
-            + args.net
-            + "_batch"
-            + str(args.batch_size)
-            + "_confidence"
-            + str(args.p_cutoff)
-            + "_lr"
-            + str(args.lr)
-            + "_nclass"
-            + str(args.num_classes)
-            + "_uratio"
-            + str(args.uratio)
-            + "_wd"
-            + str(args.weight_decay)
-            + "_wu"
-            + str(args.ulb_loss_ratio)
-            + "_seed"
-            + str(args.seed)
-        )
-        tb_log = TBLog(save_path, dir_name)
+        tb_log = TBLog(save_path, '')
         logger_level = "INFO"
 
     logger = get_logger(args.save_name, save_path, logger_level)
@@ -259,6 +247,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     # If args.resume, load checkpoints from args.load_path
     if args.resume:
+        print("Resuming model located at: ", args.load_path)
         model.load_model(args.load_path)
 
     # START TRAINING of FixMatch
