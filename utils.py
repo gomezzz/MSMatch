@@ -124,6 +124,8 @@ def create_dir_str(args):
            + str(args.seed)
            + "_numlabels"
            + str(args.num_labels)
+           + "_opt"
+           + str(args.opt)
        )
     return dir_name
 
@@ -180,6 +182,6 @@ def decode_parameters_from_path(filepath):
     params["wu"] = float(param_string[8][2:])
     params["seed"] = float(param_string[9][4:])
     params["numlabels"] = int(param_string[10][9:])
-    
+    params["opt"] = param_string[11][3:]
     return params
 
