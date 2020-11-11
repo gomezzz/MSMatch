@@ -176,8 +176,6 @@ class FixMatch:
                 T = self.t_fn(self.it)
                 p_cutoff = self.p_fn(self.it)
 
-                train_accuracy = accuracy(logits_x_lb, y_lb)
-                train_accuracy = train_accuracy[0]
                 sup_loss = ce_loss(logits_x_lb, y_lb, reduction="mean")
                 unsup_loss, mask = consistency_loss(
                     logits_x_ulb_w,
@@ -204,6 +202,8 @@ class FixMatch:
 
             with torch.no_grad():
                 self._eval_model_update()
+                train_accuracy = accuracy(logits_x_lb, y_lb)
+                train_accuracy = train_accuracy[0]
 
             end_run.record()
             torch.cuda.synchronize()
@@ -267,6 +267,7 @@ class FixMatch:
 
     @torch.no_grad()
     def evaluate(self, eval_loader=None, args=None):
+        torch.cuda.empty_cache()
         use_ema = hasattr(self, "eval_model")
 
         eval_model = self.eval_model if use_ema else self.train_model
