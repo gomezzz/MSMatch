@@ -1,6 +1,7 @@
 import os, glob
 import time
 from torch.utils.tensorboard import SummaryWriter
+from efficientnet_pytorch import EfficientNet
 import logging
 
 
@@ -64,10 +65,12 @@ def net_builder(net_name, from_name: bool, net_conf=None):
             setattr_cls_from_kwargs(builder, net_conf)
             return builder.build
         elif net_name == "efficientNet":
-            from efficientnet_pytorch import EfficientNet
-
             return lambda num_classes: EfficientNet.from_name(
                 "efficientnet-b0", num_classes=num_classes
+            )
+        elif "efficientnet" in net_name:
+            return lambda num_classes: EfficientNet.from_name(
+                net_name, num_classes=num_classes
             )
         else:
             assert Exception("Not Implemented Error")
@@ -99,34 +102,34 @@ def get_logger(name, save_path=None, level="INFO"):
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
-  
+
 
 def create_dir_str(args):
     dir_name = (
-           args.dataset
-           +"/FixMatch_arch"
-           + args.net
-           + "_batch"
-           + str(args.batch_size)
-           + "_confidence"
-           + str(args.p_cutoff)
-           + "_lr"
-           + str(args.lr)
-           + "_nclass"
-           + str(args.num_classes)
-           + "_uratio"
-           + str(args.uratio)
-           + "_wd"
-           + str(args.weight_decay)
-           + "_wu"
-           + str(args.ulb_loss_ratio)
-           + "_seed"
-           + str(args.seed)
-           + "_numlabels"
-           + str(args.num_labels)
-           + "_opt"
-           + str(args.opt)
-       )
+        args.dataset
+        + "/FixMatch_arch"
+        + args.net
+        + "_batch"
+        + str(args.batch_size)
+        + "_confidence"
+        + str(args.p_cutoff)
+        + "_lr"
+        + str(args.lr)
+        + "_nclass"
+        + str(args.num_classes)
+        + "_uratio"
+        + str(args.uratio)
+        + "_wd"
+        + str(args.weight_decay)
+        + "_wu"
+        + str(args.ulb_loss_ratio)
+        + "_seed"
+        + str(args.seed)
+        + "_numlabels"
+        + str(args.num_labels)
+        + "_opt"
+        + str(args.opt)
+    )
     return dir_name
 
 
