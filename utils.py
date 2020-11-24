@@ -113,8 +113,6 @@ def create_dir_str(args):
         args.dataset
         + "/FixMatch_arch"
         + args.net
-        + "_pretrained"
-        + str(args.pretrained)
         + "_batch"
         + str(args.batch_size)
         + "_confidence"
@@ -135,6 +133,8 @@ def create_dir_str(args):
         + str(args.num_labels)
         + "_opt"
         + str(args.opt)
+        + "_pretrained"
+        + str(args.pretrained)
     )
     return dir_name
 
@@ -192,5 +192,6 @@ def decode_parameters_from_path(filepath):
     params["seed"] = float(param_string[9][4:])
     params["numlabels"] = int(param_string[10][9:])
     params["opt"] = param_string[11][3:]
+    params["pretrained"] = param_string[12][10:]
     return params
 
