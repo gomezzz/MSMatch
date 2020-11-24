@@ -29,7 +29,7 @@ def test_setattr_cls_from_kwargs():
         print(f"{key}:\t {getattr(test_cls, key)}")
 
 
-def net_builder(net_name, from_name: bool, net_conf=None):
+def net_builder(net_name, from_name: bool, net_conf=None, pretrained=False):
     """
     return **class** of backbone network (not instance).
     Args
@@ -64,20 +64,24 @@ def net_builder(net_name, from_name: bool, net_conf=None):
             builder = getattr(net, "build_WideResNet")()
             setattr_cls_from_kwargs(builder, net_conf)
             return builder.build
-        elif net_name == "efficientNet":
-            return lambda num_classes: EfficientNet.from_name(
-                "efficientnet-b0", num_classes=num_classes
-            )
         elif "efficientnet" in net_name:
-            return lambda num_classes: EfficientNet.from_name(
-                net_name, num_classes=num_classes
-            )
+            if pretrained:
+                print("Using pretrained", net_name, "...")
+                return lambda num_classes: EfficientNet.from_pretrained(
+                    net_name, num_classes=num_classes
+                )
+
+            else:
+                print("Using not pretrained model", net_name, "...")
+                return lambda num_classes: EfficientNet.from_name(
+                    net_name, num_classes=num_classes
+                )
         else:
             assert Exception("Not Implemented Error")
 
 
-def test_net_builder(net_name, from_name, net_conf=None):
-    builder = net_builder(net_name, from_name, net_conf)
+def test_net_builder(net_name, from_name, net_conf=None, pretrained=False):
+    builder = net_builder(net_name, from_name, net_conf, pretrained)
     print(f"net_name: {net_name}, from_name: {from_name}, net_conf: {net_conf}")
     print(builder)
 
@@ -109,6 +113,8 @@ def create_dir_str(args):
         args.dataset
         + "/FixMatch_arch"
         + args.net
+        + "_pretrained"
+        + str(args.pretrained)
         + "_batch"
         + str(args.batch_size)
         + "_confidence"
