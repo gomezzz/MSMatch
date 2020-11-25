@@ -144,7 +144,7 @@ def get_model_checkpoints(folderpath):
     """
     # Find present models
     folderpath = folderpath.replace("\\", "/")
-    model_files = glob.glob(folderpath + "/**/*.pth", recursive=True)
+    model_files = glob.glob(folderpath + "/**/model_best.pth", recursive=True)
     folders = [model_file.split("model_best.pth")[0] for model_file in model_files]
 
     checkpoints = []
