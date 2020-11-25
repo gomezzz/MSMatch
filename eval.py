@@ -33,6 +33,9 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="./data")
     parser.add_argument("--dataset", type=str, default="cifar10")
     parser.add_argument("--num_classes", type=int, default=10)
+    parser.add_argument(
+        "--seed", default=0, type=int, help="seed for initializing training. "
+    )
     args = parser.parse_args()
 
     checkpoint_path = os.path.join(args.load_path)
@@ -58,7 +61,9 @@ if __name__ == "__main__":
         net.cuda()
     net.eval()
 
-    _eval_dset = SSL_Dataset(name=args.dataset, train=False, data_dir=args.data_dir)
+    _eval_dset = SSL_Dataset(
+        name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed
+    )
     eval_dset = _eval_dset.get_dset()
 
     eval_loader = get_data_loader(eval_dset, args.batch_size, num_workers=1)

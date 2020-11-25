@@ -213,6 +213,7 @@ def main_worker(gpu, ngpus_per_node, args):
         train=True,
         num_classes=args.num_classes,
         data_dir=args.data_dir,
+        seed=args.seed,
     )
     lb_dset, ulb_dset = train_dset.get_ssl_dset(args.num_labels)
 
@@ -221,6 +222,7 @@ def main_worker(gpu, ngpus_per_node, args):
         train=False,
         num_classes=args.num_classes,
         data_dir=args.data_dir,
+        seed=args.seed,
     )
     eval_dset = _eval_dset.get_dset()
 
@@ -359,7 +361,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_workers", type=int, default=1)
 
     """
-    multi-GPUs & Distrbitued Training
+    multi-GPUs & Distributed Training
     """
 
     ## args for distributed training (from https://github.com/pytorch/examples/blob/master/imagenet/main.py)

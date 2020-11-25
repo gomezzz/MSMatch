@@ -61,16 +61,20 @@ class SSL_Dataset:
     and return BasicDataset: torch.utils.data.Dataset (see datasets.dataset.py)
     """
 
-    def __init__(self, name="cifar10", train=True, num_classes=10, data_dir="./data"):
+    def __init__(
+        self, name="cifar10", train=True, num_classes=10, data_dir="./data", seed=42
+    ):
         """
         Args
             name: name of dataset in torchvision.datasets (cifar10, cifar100)
             train: True means the dataset is training dataset (default=True)
             num_classes: number of label classes
             data_dir: path of directory, where data is downloaed or stored.
+            seed: seed to use for the train / test split. Not available for cifar which is presplit
         """
 
         self.name = name
+        self.seed = seed
         self.train = train
         self.data_dir = data_dir
         self.num_classes = num_classes
@@ -85,11 +89,11 @@ class SSL_Dataset:
             dset = getattr(torchvision.datasets, self.name.upper())
             dset = dset(self.data_dir, train=self.train, download=True)
         elif self.name == "ucm":
-            dset = UCMDataset(train=self.train)
+            dset = UCMDataset(train=self.train, seed=self.seed)
         elif self.name == "aid":
-            dset = AIDDataset(train=self.train)
+            dset = AIDDataset(train=self.train, seed=self.seed)
         elif self.name == "eurosat_rgb":
-            dset = EurosatRGBDataset(train=self.train)
+            dset = EurosatRGBDataset(train=self.train, seed=self.seed)
 
         if self.name in ["cifar10", "cifar100"]:
             self.label_encoding = None
