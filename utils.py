@@ -133,9 +133,9 @@ def create_dir_str(args):
         + str(args.num_labels)
         + "_opt"
         + str(args.opt)
-        + "_pretrained"
-        + str(args.pretrained)
     )
+    if args.pretrained:
+        dir_name = dir_name + "_pretrained"
     return dir_name
 
 
@@ -192,6 +192,8 @@ def decode_parameters_from_path(filepath):
     params["seed"] = float(param_string[9][4:])
     params["numlabels"] = int(param_string[10][9:])
     params["opt"] = param_string[11][3:]
-    params["pretrained"] = param_string[12][10:]
+    if len(param_string) > 12:
+        if param_string[12] == "pretrained":
+            params["pretrained"] = "pretrained"
     return params
 
