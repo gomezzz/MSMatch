@@ -29,7 +29,7 @@ def test_setattr_cls_from_kwargs():
         print(f"{key}:\t {getattr(test_cls, key)}")
 
 
-def net_builder(net_name, from_name: bool, net_conf=None):
+def net_builder(net_name, from_name: bool, net_conf=None, pretrained=False):
     """
     return **class** of backbone network (not instance).
     Args
@@ -64,20 +64,24 @@ def net_builder(net_name, from_name: bool, net_conf=None):
             builder = getattr(net, "build_WideResNet")()
             setattr_cls_from_kwargs(builder, net_conf)
             return builder.build
-        elif net_name == "efficientNet":
-            return lambda num_classes: EfficientNet.from_name(
-                "efficientnet-b0", num_classes=num_classes
-            )
         elif "efficientnet" in net_name:
-            return lambda num_classes: EfficientNet.from_name(
-                net_name, num_classes=num_classes
-            )
+            if pretrained:
+                print("Using pretrained", net_name, "...")
+                return lambda num_classes: EfficientNet.from_pretrained(
+                    net_name, num_classes=num_classes
+                )
+
+            else:
+                print("Using not pretrained model", net_name, "...")
+                return lambda num_classes: EfficientNet.from_name(
+                    net_name, num_classes=num_classes
+                )
         else:
             assert Exception("Not Implemented Error")
 
 
-def test_net_builder(net_name, from_name, net_conf=None):
-    builder = net_builder(net_name, from_name, net_conf)
+def test_net_builder(net_name, from_name, net_conf=None, pretrained=False):
+    builder = net_builder(net_name, from_name, net_conf, pretrained)
     print(f"net_name: {net_name}, from_name: {from_name}, net_conf: {net_conf}")
     print(builder)
 
@@ -130,6 +134,8 @@ def create_dir_str(args):
         + "_opt"
         + str(args.opt)
     )
+    if args.pretrained:
+        dir_name = dir_name + "_pretrained"
     return dir_name
 
 
@@ -186,5 +192,8 @@ def decode_parameters_from_path(filepath):
     params["seed"] = float(param_string[9][4:])
     params["numlabels"] = int(param_string[10][9:])
     params["opt"] = param_string[11][3:]
+    if len(param_string) > 12:
+        if param_string[12] == "pretrained":
+            params["pretrained"] = "pretrained"
     return params
 
