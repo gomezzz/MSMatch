@@ -39,6 +39,7 @@ class AIDDataset(torch.utils.data.Dataset):
         """
         images = np.zeros([self.N, self.size[0], self.size[1], 3], dtype="uint8")
         labels = []
+        filenames = []
 
         i = 0
         # read all the files from the image folder
@@ -48,6 +49,7 @@ class AIDDataset(torch.utils.data.Dataset):
                 continue
             for subitem in os.listdir(f):
                 sub_f = os.path.join(f, subitem)
+                filenames.append(sub_f)
                 # a few images are a few pixels off, we will resize them
                 image = imageio.imread(sub_f)
                 if image.shape[0] != self.size[0] or image.shape[1] != self.size[1]:
@@ -58,6 +60,13 @@ class AIDDataset(torch.utils.data.Dataset):
                 images[i] = img_as_ubyte(image)
                 i += 1
                 labels.append(item)
+
+        labels = np.asarray(labels)
+        filenames = np.asarray(filenames)
+
+        # sort by filenames
+        images = images[filenames.argsort()]
+        labels = labels[filenames.argsort()]
 
         # convert to integer labels
         le = preprocessing.LabelEncoder()
