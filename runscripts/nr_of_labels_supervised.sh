@@ -23,7 +23,7 @@ mkdir -p $SAVE_LOCATION
 cd $FIXMATCH_FOLDER
 
 
-for NUM_LABELS in 10 20 40 100 200 400; do #Note: they are the total number of labels, not per class.
+for NUM_LABELS in 50 100 500 1000 2000 3000; do #Note: they are the total number of labels, not per class.
 	echo python train.py --weight_decay $WEIGHT_DECAY --rank 0 --gpu $DEVICE --lr $LR --batch_size $BATCH_SIZE --num_train_iter $NUM_TRAIN_ITER --num_eval_iter $NUM_EVAL_ITER --num_labels $NUM_LABELS --save_name $SAVE_NAME --save_dir $SAVE_LOCATION --dataset $DATASET --num_classes -1 --net $NET --seed $SEED --uratio $UNLABELED_RATIO --ulb_loss_ratio $ULB_LOSS_RATIO
 	wait
 done

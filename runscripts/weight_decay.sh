@@ -12,7 +12,6 @@ N_EPOCH=500                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER * B
 NUM_EVAL_ITER=1000            #Number of iterations 
 NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER * BATCH_SIZE/ 32))
 SEED=0
-PRETRAINED=0
 LR=0.03
 
 #create save location
