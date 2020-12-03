@@ -20,12 +20,14 @@ mean["cifar100"] = [x / 255 for x in [129.3, 124.1, 112.4]]
 mean["ucm"] = [x / 255 for x in [123.58113728, 125.08415423, 115.0754208]]
 mean["aid"] = [x / 255 for x in [100.40901229, 103.34463381, 92.92875687]]
 mean["eurosat_rgb"] = [x / 255 for x in [87.78644464, 96.96653968, 103.99007906]]
+mean["eurosat_ms"] = [0.0, 0.0, 0]  # images are already normalized
 
 std["cifar10"] = [x / 255 for x in [63.0, 62.1, 66.7]]
 std["cifar100"] = [x / 255 for x in [68.2, 65.4, 70.4]]
 std["ucm"] = [x / 255 for x in [55.40512165, 51.34108472, 49.80905244]]
 std["aid"] = [x / 255 for x in [53.71052739, 47.81369006, 47.19406823]]
 std["eurosat_rgb"] = [x / 255 for x in [51.92045453, 34.82338243, 29.26981551]]
+std["eurosat_ms"] = [1.0, 1.0, 1.0]  # images are already normalized
 
 
 def get_transform(mean, std, train=True):
@@ -93,6 +95,8 @@ class SSL_Dataset:
         elif self.name == "aid":
             dset = AIDDataset(train=self.train, seed=self.seed)
         elif self.name == "eurosat_rgb":
+            dset = EurosatRGBDataset(train=self.train, seed=self.seed)
+        elif self.name == "eurosat_ms":
             dset = EurosatRGBDataset(train=self.train, seed=self.seed)
 
         if self.name in ["cifar10", "cifar100"]:
