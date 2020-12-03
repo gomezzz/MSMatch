@@ -30,6 +30,7 @@ def main(args):
         "cifar_100": 100,
         "ucm": 21,
         "eurosat_rgb": 10,
+        "eurosat_ms": 10,
         "aid": 30,
     }
 
