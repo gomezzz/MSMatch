@@ -6,9 +6,15 @@
 import random
 
 import PIL, PIL.ImageOps, PIL.ImageEnhance, PIL.ImageDraw
+import albumentations as A
 import numpy as np
 import torch
 from PIL import Image
+
+try:  # to test locally by running python randaugment.py
+    from .ms_augmentations import ms_augmentation_list
+except:
+    from ms_augmentations import ms_augmentation_list
 
 
 def AutoContrast(img, _):
@@ -114,8 +120,14 @@ def Cutout(img, v):  # [0, 60] => percentage: [0, 0.2] => change to [0, 0.5]
     if v <= 0.0:
         return img
 
-    v = v * img.size[0]
-    return CutoutAbs(img, v)
+    if isinstance(img, np.ndarray):
+        v = int(v * img.shape[0])
+        return A.Cutout(1, v, v, always_apply=True, fill_value=(128))(image=img)[
+            "image"
+        ]
+    else:
+        v = v * img.size[0]
+        return CutoutAbs(img, v)
 
 
 def CutoutAbs(img, v):  # [0, 60] => percentage: [0, 0.2]
@@ -160,10 +172,13 @@ def augment_list():
 
 
 class RandAugment:
-    def __init__(self, n, m):
+    def __init__(self, n, m, use_ms_augmentations=False):
         self.n = n
         self.m = m  # [0, 30] in fixmatch, deprecated.
-        self.augment_list = augment_list()
+        if use_ms_augmentations:
+            self.augment_list = ms_augmentation_list()
+        else:
+            self.augment_list = augment_list()
 
     def __call__(self, img):
         ops = random.choices(self.augment_list, k=self.n)
@@ -176,7 +191,12 @@ class RandAugment:
 
 
 if __name__ == "__main__":
-    randaug = RandAugment(3, 5)
+    randaug = RandAugment(3, 5, True)
+    test_img = np.zeros([32, 32, 13], dtype="uint8")
     print(randaug)
-    for item in randaug.augment_list:
-        print(item)
+
+    for op, min_val, max_val in randaug.augment_list:
+        val = min_val + float(max_val - min_val) * random.random()
+        print(op)
+        img = op(test_img, val)
+

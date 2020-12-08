@@ -25,6 +25,7 @@ class BasicDataset(Dataset):
         use_strong_transform=False,
         strong_transform=None,
         onehot=False,
+        use_ms_augmentations=False,
         *args,
         **kwargs
     ):
@@ -37,6 +38,7 @@ class BasicDataset(Dataset):
             use_strong_transform: If True, this dataset returns both weakly and strongly augmented images.
             strong_transform: list of transformation functions for strong augmentation
             onehot: If True, label is converted into onehot vector.
+            use_ms_augmentations: If True will use albumentations and imgaug for augmentations (required for multispectral)
         """
         super(BasicDataset, self).__init__()
         self.data = data
@@ -44,13 +46,16 @@ class BasicDataset(Dataset):
 
         self.num_classes = num_classes
         self.use_strong_transform = use_strong_transform
+        self.use_ms_augmentations = use_ms_augmentations
         self.onehot = onehot
 
         self.transform = transform
         if use_strong_transform:
             if strong_transform is None:
                 self.strong_transform = copy.deepcopy(transform)
-                self.strong_transform.transforms.insert(0, RandAugment(3, 5))
+                self.strong_transform.transforms.insert(
+                    0, RandAugment(3, 5, use_ms_augmentations=use_ms_augmentations)
+                )
         else:
             self.strong_transform = strong_transform
 
@@ -77,7 +82,7 @@ class BasicDataset(Dataset):
         if self.transform is None:
             return transforms.ToTensor()(img), target
         else:
-            if isinstance(img, np.ndarray):
+            if isinstance(img, np.ndarray) and not self.use_ms_augmentations:
                 img = Image.fromarray(img)
             img_w = self.transform(img)
             if not self.use_strong_transform:
