@@ -33,6 +33,19 @@ class EurosatDataset(torch.utils.data.Dataset):
         self.N = 27000
         self._load_data()
 
+    def _normalize_to_0_to_1(self, img):
+        """Normalizes the passed image to 0 to 1
+
+        Args:
+            img (np.array): image to normalize
+
+        Returns:
+            np.array: normalized image
+        """
+        img = img + np.min(img)  # move min to 0
+        img = img / np.max(img)  # scale to 0 to 1
+        return img
+
     def _load_data(self):
         """Loads the data from the passed root directory. Splits in test/train based on seed. By default resized to 256,256
         """
@@ -52,10 +65,10 @@ class EurosatDataset(torch.utils.data.Dataset):
                 # a few images are a few pixels off, we will resize them
                 image = imageio.imread(sub_f)
                 if image.shape[0] != self.size[0] or image.shape[1] != self.size[1]:
-                    image = img_as_ubyte(
-                        resize(image, (self.size[0], self.size[1]), anti_aliasing=True)
+                    image = resize(
+                        image, (self.size[0], self.size[1]), anti_aliasing=True
                     )
-                images[i] = img_as_ubyte(image)
+                images[i] = img_as_ubyte(self._normalize_to_0_to_1(image))
                 i += 1
                 labels.append(item)
 
