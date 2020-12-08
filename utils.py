@@ -162,6 +162,25 @@ def get_model_checkpoints(folderpath):
     return checkpoints, params
 
 
+def _read_best_iteration_number(folder):
+    """Reads from the run log file at which iteration the best result was obtained.
+
+    Args:
+        folder (str): results folder
+
+    Returns:
+        int: iteration number
+    """
+    # Read second last line from the file
+    with open(folder + "log.txt", "r") as file:
+        lines = file.read().splitlines()
+        second_last_line = lines[-2]
+
+    # Fine iteration number
+    iteration_str = second_last_line.split(", at ")[1]
+    return int(iteration_str.split(" iters")[0])
+
+
 def decode_parameters_from_path(filepath):
     """Decodes the parameters encoded in the filepath to a checkpoint
 
@@ -172,6 +191,7 @@ def decode_parameters_from_path(filepath):
         dict: dictionary with all parameters
     """
     params = {}
+    iteration_count = _read_best_iteration_number(filepath)
 
     filepath = filepath.replace("\\", "/")
     filepath = filepath.split("/")
@@ -195,5 +215,7 @@ def decode_parameters_from_path(filepath):
     if len(param_string) > 12:
         if param_string[12] == "pretrained":
             params["pretrained"] = "pretrained"
+
+    params["iterations"] = iteration_count
     return params
 
