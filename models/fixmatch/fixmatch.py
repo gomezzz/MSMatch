@@ -18,6 +18,7 @@ class FixMatch:
         self,
         net_builder,
         num_classes,
+        in_channels,
         ema_m,
         T,
         p_cutoff,
@@ -34,7 +35,8 @@ class FixMatch:
         class Fixmatch contains setter of data_loader, optimizer, and model update methods.
         Args:
             net_builder: backbone network class (see net_builder in utils.py)
-            num_classes: # of label classes 
+            num_classes: # of label classes
+            in_channels: number of image channels 
             ema_m: momentum of exponential moving average for eval_model
             T: Temperature scaling parameter for output sharpening (only when hard_label = False)
             p_cutoff: confidence cutoff parameters for loss masking
@@ -57,8 +59,8 @@ class FixMatch:
         # network is builded only by num_classes,
         # other configs are covered in main.py
 
-        self.train_model = net_builder(num_classes=num_classes)
-        self.eval_model = net_builder(num_classes=num_classes)
+        self.train_model = net_builder(num_classes=num_classes, in_channels=in_channels)
+        self.eval_model = net_builder(num_classes=num_classes, in_channels=in_channels)
         self.num_eval_iter = num_eval_iter
         self.t_fn = Get_Scalar(T)  # temperature params function
         self.p_fn = Get_Scalar(p_cutoff)  # confidence cutoff function

@@ -29,15 +29,21 @@ def test_setattr_cls_from_kwargs():
         print(f"{key}:\t {getattr(test_cls, key)}")
 
 
-def net_builder(net_name, from_name: bool, net_conf=None, pretrained=False):
+def net_builder(
+    net_name, from_name: bool, net_conf=None, pretrained=False, in_channels=3
+):
     """
     return **class** of backbone network (not instance).
     Args
         net_name: 'WideResNet' or network names in torchvision.models
         from_name: If True, net_buidler takes models in torch.vision models. Then, net_conf is ignored.
         net_conf: When from_name is False, net_conf is the configuration of backbone network (now, only WRN is supported).
+        pre_trained: Specifies if a pretrained network should be loaded (only works for efficientNet)
+        in_channels: Input channels to the network
     """
     if from_name:
+        assert in_channels == 3
+        assert not pretrained
         import torchvision.models as models
 
         model_name_list = sorted(
@@ -59,6 +65,8 @@ def net_builder(net_name, from_name: bool, net_conf=None, pretrained=False):
 
     else:
         if net_name == "WideResNet":
+            assert in_channels == 3
+            assert not pretrained
             import models.nets.wrn as net
 
             builder = getattr(net, "build_WideResNet")()
@@ -67,14 +75,14 @@ def net_builder(net_name, from_name: bool, net_conf=None, pretrained=False):
         elif "efficientnet" in net_name:
             if pretrained:
                 print("Using pretrained", net_name, "...")
-                return lambda num_classes: EfficientNet.from_pretrained(
-                    net_name, num_classes=num_classes
+                return lambda num_classes, in_channels: EfficientNet.from_pretrained(
+                    net_name, num_classes=num_classes, in_channels=in_channels
                 )
 
             else:
                 print("Using not pretrained model", net_name, "...")
-                return lambda num_classes: EfficientNet.from_name(
-                    net_name, num_classes=num_classes
+                return lambda num_classes, in_channels: EfficientNet.from_name(
+                    net_name, num_classes=num_classes, in_channels=in_channels
                 )
         else:
             assert Exception("Not Implemented Error")
