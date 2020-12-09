@@ -24,19 +24,6 @@ def main(args):
     For (Distributed)DataParallelism,
     main(args) spawn each process (main_worker) to each GPU.
     """
-
-    default_num_class_dict = {
-        "cifar_10": 10,
-        "cifar_100": 100,
-        "ucm": 21,
-        "eurosat_rgb": 10,
-        "eurosat_ms": 10,
-        "aid": 30,
-    }
-
-    if args.num_classes == -1:
-        args.num_classes = default_num_class_dict[args.dataset]
-
     dir_name = create_dir_str(args)
 
     args.save_name = os.path.join(args.save_name, dir_name)
@@ -128,6 +115,20 @@ def main_worker(gpu, ngpus_per_node, args):
     logger = get_logger(args.save_name, save_path, logger_level)
     logger.warning(f"USE GPU: {args.gpu} for training")
 
+    # Construct Dataset
+    train_dset = SSL_Dataset(
+        name=args.dataset, train=True, data_dir=args.data_dir, seed=args.seed,
+    )
+    lb_dset, ulb_dset = train_dset.get_ssl_dset(args.num_labels)
+
+    args.num_classes = train_dset.num_classes
+    args.num_channels = train_dset.num_channels
+
+    _eval_dset = SSL_Dataset(
+        name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed,
+    )
+    eval_dset = _eval_dset.get_dset()
+
     # SET FixMatch: class FixMatch in models.fixmatch
     args.bn_momentum = 1.0 - args.ema_m
     _net_builder = net_builder(
@@ -141,13 +142,13 @@ def main_worker(gpu, ngpus_per_node, args):
             "dropRate": args.dropout,
         },
         pretrained=args.pretrained,
-        in_channels=args.channels,
+        in_channels=args.num_channels,
     )
 
     model = FixMatch(
         _net_builder,
         args.num_classes,
-        args.channels,
+        args.num_channels,
         args.ema_m,
         args.T,
         args.p_cutoff,
@@ -210,25 +211,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     cudnn.benchmark = True
 
-    # Construct Dataset & DataLoader
-    train_dset = SSL_Dataset(
-        name=args.dataset,
-        train=True,
-        num_classes=args.num_classes,
-        data_dir=args.data_dir,
-        seed=args.seed,
-    )
-    lb_dset, ulb_dset = train_dset.get_ssl_dset(args.num_labels)
-
-    _eval_dset = SSL_Dataset(
-        name=args.dataset,
-        train=False,
-        num_classes=args.num_classes,
-        data_dir=args.data_dir,
-        seed=args.seed,
-    )
-    eval_dset = _eval_dset.get_dset()
-
+    # Construct data loader
     loader_dict = {}
     dset_dict = {"train_lb": lb_dset, "train_ulb": ulb_dset, "eval": eval_dset}
 
@@ -360,8 +343,6 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="./data")
     parser.add_argument("--dataset", type=str, default="cifar10")
     parser.add_argument("--train_sampler", type=str, default="RandomSampler")
-    parser.add_argument("--num_classes", type=int, default=10)
-    parser.add_argument("--channels", type=int, default=3)
     parser.add_argument("--num_workers", type=int, default=1)
 
     """

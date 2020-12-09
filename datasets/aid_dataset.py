@@ -27,6 +27,8 @@ class AIDDataset(torch.utils.data.Dataset):
         """
         self.seed = seed
         self.size = resize_to
+        self.num_channels = 3
+        self.num_classes = 30
         self.root_dir = root_dir
         self.transform = transform
         self.test_ratio = 0.1

@@ -127,8 +127,6 @@ def create_dir_str(args):
         + str(args.p_cutoff)
         + "_lr"
         + str(args.lr)
-        + "_nclass"
-        + str(args.num_classes)
         + "_uratio"
         + str(args.uratio)
         + "_wd"
@@ -213,15 +211,14 @@ def decode_parameters_from_path(filepath):
     params["confidence"] = float(param_string[3][10:])
     # params["filters"] = int(param_string[4][7:])
     params["lr"] = float(param_string[4][2:])
-    params["num_classes"] = int(param_string[5][6:])
-    params["uratio"] = int(param_string[6][6:])
-    params["wd"] = float(param_string[7][2:])
-    params["wu"] = float(param_string[8][2:])
-    params["seed"] = float(param_string[9][4:])
-    params["numlabels"] = int(param_string[10][9:])
-    params["opt"] = param_string[11][3:]
-    if len(param_string) > 12:
-        if param_string[12] == "pretrained":
+    params["uratio"] = int(param_string[5][6:])
+    params["wd"] = float(param_string[6][2:])
+    params["wu"] = float(param_string[7][2:])
+    params["seed"] = float(param_string[8][4:])
+    params["numlabels"] = int(param_string[9][9:])
+    params["opt"] = param_string[10][3:]
+    if len(param_string) > 11:
+        if param_string[11] == "pretrained":
             params["pretrained"] = "pretrained"
 
     params["iterations"] = iteration_count

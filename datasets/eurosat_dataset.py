@@ -26,6 +26,8 @@ class EurosatDataset(torch.utils.data.Dataset):
         """
         self.seed = seed
         self.size = [64, 64]
+        self.num_channels = 13
+        self.num_classes = 10
         self.root_dir = root_dir
         self.transform = transform
         self.test_ratio = 0.1
