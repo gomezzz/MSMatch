@@ -42,7 +42,7 @@ class EurosatDataset(torch.utils.data.Dataset):
         Returns:
             np.array: normalized image
         """
-        img = img + np.min(img)  # move min to 0
+        img = img + np.minimum(0, np.min(img))  # move min to 0
         img = img / np.max(img)  # scale to 0 to 1
         return img
 
