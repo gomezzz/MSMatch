@@ -97,14 +97,11 @@ class SSL_Dataset:
     and return BasicDataset: torch.utils.data.Dataset (see datasets.dataset.py)
     """
 
-    def __init__(
-        self, name="cifar10", train=True, num_classes=10, data_dir="./data", seed=42
-    ):
+    def __init__(self, name="cifar10", train=True, data_dir="./data", seed=42):
         """
         Args
             name: name of dataset in torchvision.datasets (cifar10, cifar100)
             train: True means the dataset is training dataset (default=True)
-            num_classes: number of label classes
             data_dir: path of directory, where data is downloaed or stored.
             seed: seed to use for the train / test split. Not available for cifar which is presplit
         """
@@ -113,7 +110,6 @@ class SSL_Dataset:
         self.seed = seed
         self.train = train
         self.data_dir = data_dir
-        self.num_classes = num_classes
         self.transform = get_transform(mean[name], std[name], train)
         self.inv_transform = get_inverse_transform(mean[name], std[name])
 
@@ -138,10 +134,18 @@ class SSL_Dataset:
         elif self.name == "eurosat_ms":
             dset = EurosatDataset(train=self.train, seed=self.seed)
 
-        if self.name in ["cifar10", "cifar100"]:
+        if self.name == "cifar10":
             self.label_encoding = None
+            self.num_classes = 10
+            self.num_channels = 3
+        elif self.name == "cifar100":
+            self.label_encoding = None
+            self.num_classes = 100
+            self.num_channels = 3
         else:
             self.label_encoding = dset.label_encoding
+            self.num_classes = dset.num_classes
+            self.num_channels = dset.num_channels
 
         data, targets = dset.data, dset.targets
         return data, targets
@@ -157,15 +161,12 @@ class SSL_Dataset:
         """
 
         data, targets = self.get_data()
-        num_classes = self.num_classes
-        transform = self.transform
-        data_dir = self.data_dir
 
         return BasicDataset(
             data,
             targets,
-            num_classes,
-            transform,
+            self.num_classes,
+            self.transform,
             use_strong_transform,
             strong_transform,
             onehot,
@@ -201,17 +202,16 @@ class SSL_Dataset:
         data, targets = self.get_data()
         num_classes = self.num_classes
         transform = self.transform
-        data_dir = self.data_dir
 
         lb_data, lb_targets, ulb_data, ulb_targets = split_ssl_data(
-            data, targets, num_labels, num_classes, index, include_lb_to_ulb
+            data, targets, num_labels, self.num_classes, index, include_lb_to_ulb
         )
 
         lb_dset = BasicDataset(
             lb_data,
             lb_targets,
-            num_classes,
-            transform,
+            self.num_classes,
+            self.transform,
             False,
             None,
             onehot,
@@ -221,8 +221,8 @@ class SSL_Dataset:
         ulb_dset = BasicDataset(
             data,
             targets,
-            num_classes,
-            transform,
+            self.num_classes,
+            self.transform,
             use_strong_transform,
             strong_transform,
             onehot,

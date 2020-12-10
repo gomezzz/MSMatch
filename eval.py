@@ -32,7 +32,6 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--data_dir", type=str, default="./data")
     parser.add_argument("--dataset", type=str, default="cifar10")
-    parser.add_argument("--num_classes", type=int, default=10)
     parser.add_argument("--channels", type=int, default=3)
     parser.add_argument(
         "--seed", default=0, type=int, help="seed for initializing training. "
@@ -56,15 +55,19 @@ if __name__ == "__main__":
         },
     )
 
+    _eval_dset = SSL_Dataset(
+        name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed
+    )
+
+    args.num_classes = _eval_dset.num_classes
+    args.num_channels = _eval_dset.num_channels
+
     net = _net_builder(num_classes=args.num_classes, in_channels=args.channels)
     net.load_state_dict(load_model)
     if torch.cuda.is_available():
         net.cuda()
     net.eval()
 
-    _eval_dset = SSL_Dataset(
-        name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed
-    )
     eval_dset = _eval_dset.get_dset()
 
     eval_loader = get_data_loader(eval_dset, args.batch_size, num_workers=1)
