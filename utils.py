@@ -209,7 +209,7 @@ def decode_parameters_from_path(filepath):
     params["uratio"] = int(param_string[6][6:])
     params["wd"] = float(param_string[7][2:])
     params["wu"] = float(param_string[8][2:])
-    params["seed"] = float(param_string[9][4:])
+    params["seed"] = int(param_string[9][4:])
     params["numlabels"] = int(param_string[10][9:])
     params["opt"] = param_string[11][3:]
     if len(param_string) > 12:
