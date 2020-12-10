@@ -55,14 +55,10 @@ def Solarize(img, v):
 
 
 def TranslateX(img, v):
-    # v = v * img.shape[0]
-    # return A.shift_scale_rotate(img, 0, 0, v, 0)
     return A.IAAAffine(translate_percent=(v, 0), always_apply=True)(image=img)["image"]
 
 
 def TranslateY(img, v):
-    # v = v * img.shape[1]
-    # return A.shift_scale_rotate(img, 0, 0, 0, v)
     return A.IAAAffine(translate_percent=(0, v), always_apply=True)(image=img)["image"]
 
 
