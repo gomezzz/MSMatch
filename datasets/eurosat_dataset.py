@@ -33,10 +33,23 @@ class EurosatDataset(torch.utils.data.Dataset):
         self.N = 27000
         self._load_data()
 
+    def _normalize_to_0_to_1(self, img):
+        """Normalizes the passed image to 0 to 1
+
+        Args:
+            img (np.array): image to normalize
+
+        Returns:
+            np.array: normalized image
+        """
+        img = img + np.minimum(0, np.min(img))  # move min to 0
+        img = img / np.max(img)  # scale to 0 to 1
+        return img
+
     def _load_data(self):
         """Loads the data from the passed root directory. Splits in test/train based on seed. By default resized to 256,256
         """
-        images = np.zeros([self.N, self.size[0], self.size[1], 13], dtype="float32")
+        images = np.zeros([self.N, self.size[0], self.size[1], 13], dtype="uint8")
         labels = []
         filenames = []
 
@@ -52,13 +65,10 @@ class EurosatDataset(torch.utils.data.Dataset):
                 # a few images are a few pixels off, we will resize them
                 image = imageio.imread(sub_f)
                 if image.shape[0] != self.size[0] or image.shape[1] != self.size[1]:
-                    # If we want to implement it check that datatypes don't make problems
-                    raise (
-                        NotImplementedError(
-                            "Resizing is currently not supported for this dataset."
-                        )
+                    image = resize(
+                        image, (self.size[0], self.size[1]), anti_aliasing=True
                     )
-                images[i] = img_as_float32(image)
+                images[i] = img_as_ubyte(self._normalize_to_0_to_1(image))
                 i += 1
                 labels.append(item)
 
@@ -100,17 +110,6 @@ class EurosatDataset(torch.utils.data.Dataset):
             idx = idx.tolist()
 
         img = self.data[idx]
-
-        # normalize per image to zero mean unit variance
-        if len(img.shape) == 3:
-            img = img / np.std(img)
-            img = img - np.mean(img)
-        elif len(img.shape) == 4:
-            for i in range(len(img)):
-                cur_img = img[i]
-                cur_img = cur_img / np.std(cur_img)
-                cur_img = cur_img - np.mean(cur_img)
-                img[i] = cur_img
 
         if self.transform:
             img = self.transform(img)

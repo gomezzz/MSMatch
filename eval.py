@@ -33,6 +33,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="./data")
     parser.add_argument("--dataset", type=str, default="cifar10")
     parser.add_argument("--num_classes", type=int, default=10)
+    parser.add_argument("--channels", type=int, default=3)
     parser.add_argument(
         "--seed", default=0, type=int, help="seed for initializing training. "
     )
@@ -55,7 +56,7 @@ if __name__ == "__main__":
         },
     )
 
-    net = _net_builder(num_classes=args.num_classes)
+    net = _net_builder(num_classes=args.num_classes, in_channels=args.channels)
     net.load_state_dict(load_model)
     if torch.cuda.is_available():
         net.cuda()

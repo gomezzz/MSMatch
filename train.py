@@ -140,12 +140,14 @@ def main_worker(gpu, ngpus_per_node, args):
             "bn_momentum": args.bn_momentum,
             "dropRate": args.dropout,
         },
-        args.pretrained,
+        pretrained=args.pretrained,
+        in_channels=args.channels,
     )
 
     model = FixMatch(
         _net_builder,
         args.num_classes,
+        args.channels,
         args.ema_m,
         args.T,
         args.p_cutoff,
@@ -359,6 +361,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", type=str, default="cifar10")
     parser.add_argument("--train_sampler", type=str, default="RandomSampler")
     parser.add_argument("--num_classes", type=int, default=10)
+    parser.add_argument("--channels", type=int, default=3)
     parser.add_argument("--num_workers", type=int, default=1)
 
     """
