@@ -59,6 +59,7 @@ if __name__ == "__main__":
         name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed
     )
 
+    eval_dset = _eval_dset.get_dset()
     args.num_classes = _eval_dset.num_classes
     args.num_channels = _eval_dset.num_channels
 
@@ -67,8 +68,6 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         net.cuda()
     net.eval()
-
-    eval_dset = _eval_dset.get_dset()
 
     eval_loader = get_data_loader(eval_dset, args.batch_size, num_workers=1)
 
