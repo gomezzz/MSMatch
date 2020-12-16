@@ -114,9 +114,13 @@ class SSL_Dataset:
         self.inv_transform = get_inverse_transform(mean[name], std[name])
 
         self.use_ms_augmentations = False
+        self.use_tensor_augmentations = False
         # need to use different augmentations for multispectral
         if self.name == "eurosat_ms":
             self.use_ms_augmentations = True
+            # If true will use torchvision augmentations
+            # If false will use albumentations / imgaug
+            self.use_tensor_augmentations = True
 
     def get_data(self):
         """
@@ -171,6 +175,7 @@ class SSL_Dataset:
             strong_transform,
             onehot,
             self.use_ms_augmentations,
+            use_tensor_augmentations=self.use_tensor_augmentations,  # if ms, we will pass tensors for now
         )
 
     def get_ssl_dset(
@@ -216,6 +221,7 @@ class SSL_Dataset:
             None,
             onehot,
             self.use_ms_augmentations,
+            use_tensor_augmentations=self.use_tensor_augmentations,  # if ms, we will pass tensors for now
         )
 
         ulb_dset = BasicDataset(
@@ -227,6 +233,7 @@ class SSL_Dataset:
             strong_transform,
             onehot,
             self.use_ms_augmentations,
+            use_tensor_augmentations=self.use_tensor_augmentations,  # if ms, we will pass tensors for now
         )
 
         return lb_dset, ulb_dset

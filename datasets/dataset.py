@@ -4,6 +4,7 @@ from .data_utils import get_onehot
 from .augmentation.randaugment import RandAugment
 
 from PIL import Image
+from torchvision.transforms.functional import to_tensor
 import numpy as np
 import copy
 
@@ -26,6 +27,7 @@ class BasicDataset(Dataset):
         strong_transform=None,
         onehot=False,
         use_ms_augmentations=False,
+        use_tensor_augmentations=True,
         *args,
         **kwargs
     ):
@@ -39,6 +41,7 @@ class BasicDataset(Dataset):
             strong_transform: list of transformation functions for strong augmentation
             onehot: If True, label is converted into onehot vector.
             use_ms_augmentations: If True will use albumentations and imgaug for augmentations (required for multispectral)
+            already_tensor: Indicates if the augmentations already produce tensors, if so remove totensor from transforms
         """
         super(BasicDataset, self).__init__()
         self.data = data
@@ -47,14 +50,27 @@ class BasicDataset(Dataset):
         self.num_classes = num_classes
         self.use_strong_transform = use_strong_transform
         self.use_ms_augmentations = use_ms_augmentations
+        self.use_tensor_augmentations = use_tensor_augmentations
         self.onehot = onehot
 
         self.transform = transform
         if use_strong_transform:
             if strong_transform is None:
                 self.strong_transform = copy.deepcopy(transform)
+                # If passing a tensor remove the toTensor
+                if use_tensor_augmentations:
+                    print("This go triggered.")
+                    self.strong_transform.transforms = self.strong_transform.transforms[
+                        1:
+                    ]
                 self.strong_transform.transforms.insert(
-                    0, RandAugment(3, 5, use_ms_augmentations=use_ms_augmentations)
+                    0,
+                    RandAugment(
+                        3,
+                        5,
+                        use_ms_augmentations=use_ms_augmentations,
+                        use_tensors=use_tensor_augmentations,
+                    ),
                 )
         else:
             self.strong_transform = strong_transform
@@ -85,6 +101,14 @@ class BasicDataset(Dataset):
             if isinstance(img, np.ndarray) and not self.use_ms_augmentations:
                 img = Image.fromarray(img)
             img_w = self.transform(img)
+
+            if (
+                isinstance(img, np.ndarray)
+                and self.use_ms_augmentations
+                and self.use_tensor_augmentations
+            ):
+                img = to_tensor(img)
+
             if not self.use_strong_transform:
                 return img_w, target
             else:

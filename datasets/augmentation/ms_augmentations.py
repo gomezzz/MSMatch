@@ -81,3 +81,20 @@ def ms_augmentation_list():
         (TranslateY, -0.3, 0.3),
     ]
     return l
+
+
+if __name__ == "__main__":
+    import time
+    import numpy as np
+
+    test_img = np.zeros([64, 64, 13], dtype="uint8")
+    test_img += (np.random.rand(64, 64, 13) * 255).astype("uint8")
+    print(np.max(test_img))
+    print(np.min(test_img))
+    for op, min_val, max_val in ms_augmentation_list():
+        val = min_val + float(max_val - min_val) * np.random.random()
+        start = time.time()
+        for i in range(3000):
+            img = op(test_img, val)
+        end = time.time()
+        print(f"{op} required: {end - start}s")

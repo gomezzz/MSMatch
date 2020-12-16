@@ -9,7 +9,10 @@ import PIL, PIL.ImageOps, PIL.ImageEnhance, PIL.ImageDraw
 import albumentations as A
 import numpy as np
 import torch
+import torchvision
 from PIL import Image
+
+from .torch_augmentations import torch_augmentation_list
 
 try:  # to test locally by running python randaugment.py
     from .ms_augmentations import ms_augmentation_list
@@ -125,9 +128,26 @@ def Cutout(img, v):  # [0, 60] => percentage: [0, 0.2] => change to [0, 0.5]
         return A.Cutout(1, v, v, always_apply=True, fill_value=(128))(image=img)[
             "image"
         ]
+    elif isinstance(img, torch.Tensor):
+        v = v * img.shape[0]
+        return CutoutAbs_torch(img, v)
     else:
         v = v * img.size[0]
         return CutoutAbs(img, v)
+
+
+def CutoutAbs_torch(img, v):  # [0, 60] => percentage: [0, 0.2]
+    # assert 0 <= v <= 20
+    if v < 0:
+        return img
+    w, h = img.shape[-2], img.shape[-1]
+    x0 = torch.randint(0, w, (1,)).item()
+    y0 = torch.randint(0, h, (1,)).item()
+
+    x0 = int(max(0, x0 - v / 2.0))
+    y0 = int(max(0, y0 - v / 2.0))
+
+    return torchvision.transforms.functional.erase(img, x0, y0, int(v), int(v), 128)
 
 
 def CutoutAbs(img, v):  # [0, 60] => percentage: [0, 0.2]
@@ -172,11 +192,14 @@ def augment_list():
 
 
 class RandAugment:
-    def __init__(self, n, m, use_ms_augmentations=False):
+    def __init__(self, n, m, use_ms_augmentations=False, use_tensors=False):
         self.n = n
         self.m = m  # [0, 30] in fixmatch, deprecated.
         if use_ms_augmentations:
-            self.augment_list = ms_augmentation_list()
+            if use_tensors:
+                self.augment_list = torch_augmentation_list()
+            else:
+                self.augment_list = ms_augmentation_list()
         else:
             self.augment_list = augment_list()
 
@@ -191,12 +214,17 @@ class RandAugment:
 
 
 if __name__ == "__main__":
-    randaug = RandAugment(3, 5, True)
-    test_img = np.zeros([32, 32, 13], dtype="uint8")
-    print(randaug)
+    import time
 
+    randaug = RandAugment(3, 5, False)
+    test_img = np.zeros([64, 64, 3], dtype="uint8")
+    test_img += (np.random.rand(64, 64, 3) * 255).astype("uint8")
+    test_img = Image.fromarray(test_img)
     for op, min_val, max_val in randaug.augment_list:
         val = min_val + float(max_val - min_val) * random.random()
-        print(op)
-        img = op(test_img, val)
+        start = time.time()
+        for i in range(1300):
+            img = op(test_img, val)
+        end = time.time()
+        print(f"{op} required: {end - start}s")
 
