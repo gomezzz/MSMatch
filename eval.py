@@ -59,7 +59,7 @@ if __name__ == "__main__":
         name=args.dataset, train=False, data_dir=args.data_dir, seed=args.seed
     )
 
-    eval_dset = _eval_dset.get_dset()
+    eval_dset_basic = _eval_dset.get_dset()
     args.num_classes = _eval_dset.num_classes
     args.num_channels = _eval_dset.num_channels
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         net.cuda()
     net.eval()
 
-    eval_loader = get_data_loader(eval_dset, args.batch_size, num_workers=1)
+    eval_loader = get_data_loader(eval_dset_basic, args.batch_size, num_workers=1)
 
     acc = 0.0
     with torch.no_grad():
@@ -79,4 +79,4 @@ if __name__ == "__main__":
 
             acc += logit.cpu().max(1)[1].eq(target).sum().numpy()
 
-    print(f"Test Accuracy: {acc/len(eval_dset)}")
+    print(f"Test Accuracy: {acc/len(eval_dset_basic)}")
