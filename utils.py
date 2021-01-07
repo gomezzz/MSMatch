@@ -226,46 +226,74 @@ def decode_parameters_from_path(filepath):
     return params
 
 
-def manipulate_df(original_df, data_folder_name, sort_criteria="net"):
-    new_df_keys = list(original_df.keys()[14:])
-    net = list(original_df[new_df_keys[0]].values)
-    if "pretrained" in original_df:
-        new_df_keys = (
-            [new_df_keys[0]]
-            + ["pretrained", "supervised"]
-            + new_df_keys[1:7]
-            + new_df_keys[8:10]
-            + [new_df_keys[11]]
-            + ["accuracy"]
-            + new_df_keys[15:]
-        )
+def clean_results_dict(original_dict, data_folder_name, sort_criterion="net"):
+    """Removing unnecessary columns to save into the csv file, sorting rows according to the sort_criterion, sorting colums according to the csv file format.
+
+    Args:
+        original_dict ([dict]): original dictionary to clean.
+        data_folder_name ([str]): string containing experiment results
+        sort_criterion (str, optional): Default criterion for rows sorting. Defaults to "net".
+
+    Returns:
+        [cleaned outputdata]: [dict]
+    """
+    del original_dict["batch_size"]
+    del original_dict["use_train_model"]
+    del original_dict["seed"]
+    del original_dict["params"]
+    del original_dict["Forest"]
+    del original_dict["AnnualCrop"]
+    del original_dict["HerbaceousVegetation"]
+    del original_dict["Highway"]
+    del original_dict["Industrial"]
+    del original_dict["Pasture"]
+    del original_dict["PermanentCrop"]
+    del original_dict["River"]
+    del original_dict["Residential"]
+    del original_dict["SeaLake"]
+    del original_dict["macro avg"]
+    del original_dict["weighted avg"]
+    del original_dict["data_dir"]
+    accuracy = original_dict["accuracy"]
+    del original_dict["accuracy"]
+    net = original_dict["net"]
+    if "pretrained" in original_dict:
+        del original_dict["pretrained"]
         pretrained = np.array("True").repeat(len(net))
     else:
-        new_df_keys = (
-            [new_df_keys[0]]
-            + ["pretrained", "supervised"]
-            + new_df_keys[1:7]
-            + new_df_keys[8:11]
-            + ["accuracy"]
-            + new_df_keys[14:]
-        )
         pretrained = np.array("False").repeat(len(net))
+
+    new_dict_keys = list(original_dict.keys())
+
+    new_dict_keys = (
+        [new_dict_keys[0]]
+        + ["pretrained", "supervised"]
+        + new_dict_keys[1:-1]
+        + ["accuracy"]
+        + [new_dict_keys[-1]]
+    )
 
     supervised = np.array(
         "False" if ("supervised" not in data_folder_name) else "True"
     ).repeat(len(net))
-    new_df_values = np.concatenate(
+
+    new_dict_values = np.concatenate(
         [
             np.array([np.array(net), pretrained, supervised]),
-            np.transpose(original_df[new_df_keys[3:]].values),
+            np.transpose(original_dict[new_dict_keys[3:-2]].values),
         ],
         axis=0,
     )
-    if sort_criteria == "net":
-        net_idx = np.argsort(net)
-        new_df_values = new_df_values[:, net_idx]
-    else:
-        numlabels_idx = np.argsort(new_df_values[9])
-        new_df_values = new_df_values[:, numlabels_idx]
-    return dict(zip(new_df_keys, new_df_values))
+    new_dict_values = np.concatenate(
+        [new_dict_values, np.expand_dims(accuracy, axis=0)], axis=0
+    )
+    new_dict_values = np.concatenate(
+        [new_dict_values, np.expand_dims(original_dict[new_dict_keys[-1]], axis=0)],
+        axis=0,
+    )
+
+    sort_idx = np.argsort(original_dict[sort_criterion])
+    new_dict_values = new_dict_values[:, sort_idx]
+
+    return dict(zip(new_dict_keys, new_dict_values))
 
