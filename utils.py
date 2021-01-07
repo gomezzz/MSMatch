@@ -3,6 +3,7 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 from efficientnet_pytorch import EfficientNet
 import logging
+import numpy as np
 
 
 def setattr_cls_from_kwargs(cls, kwargs):
@@ -223,4 +224,48 @@ def decode_parameters_from_path(filepath):
 
     params["iterations"] = iteration_count
     return params
+
+
+def manipulate_df(original_df, data_folder_name, sort_criteria="net"):
+    new_df_keys = list(original_df.keys()[14:])
+    net = list(original_df[new_df_keys[0]].values)
+    if "pretrained" in original_df:
+        new_df_keys = (
+            [new_df_keys[0]]
+            + ["pretrained", "supervised"]
+            + new_df_keys[1:7]
+            + new_df_keys[8:10]
+            + [new_df_keys[11]]
+            + ["accuracy"]
+            + new_df_keys[15:]
+        )
+        pretrained = np.array("True").repeat(len(net))
+    else:
+        new_df_keys = (
+            [new_df_keys[0]]
+            + ["pretrained", "supervised"]
+            + new_df_keys[1:7]
+            + new_df_keys[8:11]
+            + ["accuracy"]
+            + new_df_keys[14:]
+        )
+        pretrained = np.array("False").repeat(len(net))
+
+    supervised = np.array(
+        "False" if ("supervised" not in data_folder_name) else "True"
+    ).repeat(len(net))
+    new_df_values = np.concatenate(
+        [
+            np.array([np.array(net), pretrained, supervised]),
+            np.transpose(original_df[new_df_keys[3:]].values),
+        ],
+        axis=0,
+    )
+    if sort_criteria == "net":
+        net_idx = np.argsort(net)
+        new_df_values = new_df_values[:, net_idx]
+    else:
+        numlabels_idx = np.argsort(new_df_values[9])
+        new_df_values = new_df_values[:, numlabels_idx]
+    return dict(zip(new_df_keys, new_df_values))
 
