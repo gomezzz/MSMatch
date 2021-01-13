@@ -3,6 +3,7 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 from efficientnet_pytorch import EfficientNet
 import logging
+import numpy as np
 
 
 def setattr_cls_from_kwargs(cls, kwargs):
@@ -223,4 +224,42 @@ def decode_parameters_from_path(filepath):
 
     params["iterations"] = iteration_count
     return params
+
+
+def clean_results_df(original_df, data_folder_name, sort_criterion="net"):
+    """Removing unnecessary columns to save into the csv file, sorting rows according to the sort_criterion, sorting colums according to the csv file format.
+
+    Args:
+        original_df ([df]): original dataframe to clean.
+        data_folder_name ([str]): string containing experiment results
+        sort_criterion (str, optional): Default criterion for rows sorting. Defaults to "net".
+
+    Returns:
+        [cleaned outputdata]: [df]
+    """
+    new_df = original_df.drop(labels=["batch_size","use_train_model","params","Forest","AnnualCrop","HerbaceousVegetation","Highway","Industrial","Pasture","PermanentCrop","River","Residential","SeaLake","macro avg","weighted avg","data_dir"],axis=1)
+    
+    #Swap accuracy positions to sort it as in the final results file
+    keys = new_df.columns.tolist()
+    keys = keys[1:-1] + [keys[0]] + [keys[-1]]
+    new_df = new_df.reindex(columns=keys)
+
+    net = new_df["net"]
+    if "pretrained" in new_df:
+        # Removing unsorted and wrong pretrained column
+        new_df = new_df.drop(labels=["pretrained"], axis=1)
+        pretrained = np.array("True").repeat(len(net))
+    else:
+        pretrained = np.array("False").repeat(len(net))
+
+    supervised = np.array(
+        "False" if ("supervised" not in data_folder_name) else "True"
+    ).repeat(len(net))
+
+    #Adding new pretained and supervised columns
+    new_df.insert(1, "supervised", supervised)
+    new_df.insert(1, "pretrained", pretrained)
+
+    #Returning new_df sorted by values according to the sort_criterion
+    return new_df.sort_values(by=[sort_criterion], axis=0)
 
