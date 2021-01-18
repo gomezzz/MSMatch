@@ -237,7 +237,7 @@ def clean_results_df(original_df, data_folder_name, sort_criterion="net"):
     Returns:
         [cleaned outputdata]: [df]
     """
-    new_df = original_df.drop(labels=["batch_size","use_train_model","params","Forest","AnnualCrop","HerbaceousVegetation","Highway","Industrial","Pasture","PermanentCrop","River","Residential","SeaLake","macro avg","weighted avg","data_dir"],axis=1)
+    new_df = original_df.drop(labels=["batch_size", "seed", "use_train_model","params","Forest","AnnualCrop","HerbaceousVegetation","Highway","Industrial","Pasture","PermanentCrop","River","Residential","SeaLake","macro avg","weighted avg","data_dir"],axis=1)
     
     #Swap accuracy positions to sort it as in the final results file
     keys = new_df.columns.tolist()
