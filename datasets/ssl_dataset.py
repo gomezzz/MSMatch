@@ -70,7 +70,7 @@ def get_transform(mean, std, train=True):
             [
                 transforms.ToTensor(),
                 transforms.RandomHorizontalFlip(),
-                transforms.RandomCrop(32, padding=4),
+                transforms.RandomCrop(64, padding=8),
                 transforms.Normalize(mean, std),
             ]
         )
