@@ -226,20 +226,58 @@ def decode_parameters_from_path(filepath):
     return params
 
 
-def clean_results_df(original_df, data_folder_name, sort_criterion="net"):
+def clean_results_df(
+    original_df, data_folder_name, sort_criterion="net", keep_per_class=False
+):
     """Removing unnecessary columns to save into the csv file, sorting rows according to the sort_criterion, sorting colums according to the csv file format.
 
     Args:
         original_df ([df]): original dataframe to clean.
         data_folder_name ([str]): string containing experiment results
         sort_criterion (str, optional): Default criterion for rows sorting. Defaults to "net".
+        keep_per_class (bool, optional): If True will not discard class-wise accuracy
 
     Returns:
         [cleaned outputdata]: [df]
     """
-    new_df = original_df.drop(labels=["batch_size", "seed", "use_train_model","params","Forest","AnnualCrop","HerbaceousVegetation","Highway","Industrial","Pasture","PermanentCrop","River","Residential","SeaLake","macro avg","weighted avg","data_dir"],axis=1)
-    
-    #Swap accuracy positions to sort it as in the final results file
+    if keep_per_class:
+        new_df = original_df.drop(
+            labels=[
+                "batch_size",
+                "seed",
+                "use_train_model",
+                "params",
+                "macro avg",
+                "weighted avg",
+                "data_dir",
+            ],
+            axis=1,
+        )
+    else:
+        new_df = original_df.drop(
+            labels=[
+                "batch_size",
+                "seed",
+                "use_train_model",
+                "params",
+                "Forest",
+                "AnnualCrop",
+                "HerbaceousVegetation",
+                "Highway",
+                "Industrial",
+                "Pasture",
+                "PermanentCrop",
+                "River",
+                "Residential",
+                "SeaLake",
+                "macro avg",
+                "weighted avg",
+                "data_dir",
+            ],
+            axis=1,
+        )
+
+    # Swap accuracy positions to sort it as in the final results file
     keys = new_df.columns.tolist()
     keys = keys[1:-1] + [keys[0]] + [keys[-1]]
     new_df = new_df.reindex(columns=keys)
@@ -256,10 +294,10 @@ def clean_results_df(original_df, data_folder_name, sort_criterion="net"):
         "False" if ("supervised" not in data_folder_name) else "True"
     ).repeat(len(net))
 
-    #Adding new pretained and supervised columns
+    # Adding new pretained and supervised columns
     new_df.insert(1, "supervised", supervised)
     new_df.insert(1, "pretrained", pretrained)
 
-    #Returning new_df sorted by values according to the sort_criterion
+    # Returning new_df sorted by values according to the sort_criterion
     return new_df.sort_values(by=[sort_criterion], axis=0)
 
