@@ -2,7 +2,7 @@
 export CUDA_VISIBLE_DEVICES=2
 DEVICE=0
 FIXMATCH_FOLDER="$HOME/project/SSLRS/"
-SAVE_LOCATION="/scratch/fixmatch_results/" #Where tensorboard output will be written
+SAVE_LOCATION="/scratch/fixmatch_results/new_runs/" #Where tensorboard output will be written
 SAVE_NAME="efficientnet_comparison"                             #Options are wideResNet,efficientNet
 DATASET=eurosat_rgb                          #Dataset to use
 NUM_LABELS=250
