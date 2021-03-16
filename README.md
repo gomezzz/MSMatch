@@ -47,13 +47,16 @@ Semi-Supervised Learning Remote Sensing
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-The Semi-Supervised Learning Remote Sensing (SSLRS) project aims to apply the state of the art of Semi-Supervised learning techniques to land-use and land-cover classification problems. Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code exploits and the extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes both the RGB and the Multi-Spectral (MS) versions of [EuroSAT](https://arxiv.org/abs/1709.00029) dataset.
+This is the code for the paper *"Semi-Supervised Scene Classification ofMultispectral Images"* by Pablo Gómez and Gabriele Meoni, which aims to apply the state of the art of semi-supervised learning techniques to land-use and land-cover classification problems. 
+Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code builds on and extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes code to work with both the RGB and the Multi-Spectral (MS) versions of the [EuroSAT](https://arxiv.org/abs/1709.00029) dataset.
 
 ### Built With
 
 * [PyTorch](https://pytorch.org/)
 * [conda](https://docs.conda.io/en/latest/)
-
+* [EfficientNet PyTorch](https://github.com/lukemelas/EfficientNet-PyTorch)
+* [albumentations](https://github.com/albumentations-team/albumentations)
+* imageio, numpy, pandas
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -79,7 +82,7 @@ We recommend using [conda](https://docs.conda.io/en/latest/) to set-up your envi
    conda env create -f environment.yml
    ```
 
-### Set-up datasets
+### Set up datasets
 To launch the training on EuroSAT (rgb or MS), it is necessary to download the corresponding datasets. The `root_dir` variable in the corresponding `datasets/eurosat_dataset.py` and `datasets/eurosat_rgb_dataset.py` files shall be adjusted according to the dataset path. 
   
 <!-- Content of Repo -->
@@ -87,19 +90,16 @@ To launch the training on EuroSAT (rgb or MS), it is necessary to download the c
 
 The repository is structured as follows: 
 
-- **datasets**: including the Semi-Supervised learning datasets usable for training, and augmentation files. To add a new dataset, a new `.py` file shall be added.
-- **external/visualizations**: containing tools for extract saliency information of trained models. We exploited the code include in the `src` directory of [pytorch-cnn-visualizations](https://github.com/utkuozbulak/pytorch-cnn-visualizations) repository.
-
-- **models**: including the neural networks models used for training.
-- **notebooks**: containing some jupyter notebooks used to extract saliency of images, collect training results, showing augmentation effects on images and providing additional functionalities. To be able to use the notebooks, it is necessary to install [Jupyter](https://jupyter.org/).
-- **runscripts**: including scripts used to train the networks.
-- **utils.py**: including functions used for notebooks.
-- **train_utils.py**: providing utils for training.
-- **train.py**: train script.
-- **eval.py**: script for evaluating a trained network.
-- **LICENSE**: license file
-- **README**: this file.
-- **environment.yml**: environment file. 
+- **datasets**: contains the semi-supervised learning datasets usable for training, and augmentation code. To add a new dataset, a new class similar to, e.g., `eurosat_rgb.py`needs to be added.
+- **external/visualizations**: contains tools to create visualizations of trained models. We utilized the code from the `src` directory of [pytorch-cnn-visualizations](https://github.com/utkuozbulak/pytorch-cnn-visualizations) repository and slightly adapted it.
+- **models**: contains the neural networks models used for training.
+- **notebooks**: contains some jupyter notebooks used to create paper figures, collect training results, showing augmentation effects on images and provide additional functionalities. To be able to use the notebooks, it is necessary to additionally install [Jupyter](https://jupyter.org/).
+- **runscripts**: includes bash scripts used to train the networks.
+- **`utils.py`**: some utility functions.
+- **`train_utils.py`**: providing utils for training.
+- **`train.py`**: main train script.
+- **`eval.py`**: main script for evaluating a trained network.
+- **`environment.yml`**: conda environment file describing dependencies. 
 
 
 <!-- USAGE EXAMPLES -->
@@ -162,15 +162,6 @@ The project is open to community contributions. Feel free to open an [issue](htt
 
 Distributed under the GPL-3.0 License. See [LICENSE](https://github.com/esa/torchquad/blob/main/LICENSE) for more information.
 
-
-<!-- FAQ -->
-## FAQ 
-
-  1. Q: `Error enabling CUDA. cuda.is_available() returned False. CPU will be used.`  <br/>A: This error indicates that no CUDA-compatible GPU could be found. Either you have no compatible GPU or the necessary CUDA requirements are missing. Using `conda`, you can install them with `conda install cudatoolkit`. For more detailed installation instructions, please refer to the [PyTorch documentation](https://pytorch.org/get-started/locally/).
-
-
-
-
 <!-- CONTACT -->
 ## Contact 
 
@@ -186,4 +177,3 @@ Project Link: [https://github.com/esa/torchquad](https://github.com/esa/torchqua
 <!-- ACKNOWLEDGEMENTS 
 This README was based on https://github.com/othneildrew/Best-README-Template
 -->
-
