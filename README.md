@@ -1,5 +1,5 @@
-# SSLRS
-Semi-Supervised Learning Remote Sensing
+# MSMatch
+Semi-Supervised Multispectral Scene Classification with Few Labels
 
 <!--
 *** Based on https://github.com/othneildrew/Best-README-Template
@@ -47,8 +47,8 @@ Semi-Supervised Learning Remote Sensing
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This is the code for the paper *"Semi-Supervised Scene Classification ofMultispectral Images"* by Pablo Gómez and Gabriele Meoni, which aims to apply the state of the art of semi-supervised learning techniques to land-use and land-cover classification problems. 
-Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code builds on and extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes code to work with both the RGB and the Multi-Spectral (MS) versions of the [EuroSAT](https://arxiv.org/abs/1709.00029) dataset.
+This is the code for the paper *"MSMatch: Semi-Supervised Multispectral Scene Classification with Few Labels"* by Pablo Gómez and Gabriele Meoni, which aims to apply the state of the art of semi-supervised learning techniques to land-use and land-cover classification problems. 
+Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code builds on and extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes code to work with both the RGB and the multispectral (MS) versions of the [EuroSAT](https://arxiv.org/abs/1709.00029) dataset.
 
 ### Built With
 
@@ -61,21 +61,21 @@ Currently, the repository includes an implementation of [FixMatch](https://arxiv
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is a brief example of setting up SSLRS.
+This is a brief example of setting up MSMatch.
 
 ### Prerequisites
 
 We recommend using [conda](https://docs.conda.io/en/latest/) to set-up your environment. This will also automatically set up CUDA and the cudatoolkit for you, enabling the use of GPUs for training, which is recommended.
 
 
-* [conda](https://docs.conda.io/en/latest/), which will take care of all requirements for you. For a detailed list of required packages, please refer to the [conda environment file](https://github.com/gomezzz/SSLRS/blob/main/environment.yml).
+* [conda](https://docs.conda.io/en/latest/), which will take care of all requirements for you. For a detailed list of required packages, please refer to the [conda environment file](https://github.com/gomezzz/MSMatch/blob/main/environment.yml).
 
 ### Installation
 
 1. Get [miniconda](https://docs.conda.io/en/latest/miniconda.html) or similar
 2. Clone the repo
    ```sh
-   git clone https://github.com/gomezzz/SSLRS.git
+   git clone https://github.com/gomezzz/MSMatch.git
    ```
 3. Setup the environment. This will create a conda environment called `torchmatch`
    ```sh
@@ -141,13 +141,13 @@ where `LOAD_PATH` is the path of the trained model (`.pth` file), `DATASET` is t
 
 ## Roadmap
 
-See the [open issues](https://github.com/gomezzz/SSLRS/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/gomezzz/MSMatch/issues) for a list of proposed features (and known issues).
 
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-The project is open to community contributions. Feel free to open an [issue](https://github.com/gomezzz/SSLRS/issues) or write us an email if you would like to discuss a problem or idea first.
+The project is open to community contributions. Feel free to open an [issue](https://github.com/gomezzz/MSMatch/issues) or write us an email if you would like to discuss a problem or idea first.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -160,7 +160,7 @@ The project is open to community contributions. Feel free to open an [issue](htt
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL-3.0 License. See [LICENSE](https://github.com/esa/torchquad/blob/main/LICENSE) for more information.
+Distributed under the GPL-3.0 License. See [LICENSE](https://github.com/gomezzz/MSMatch/blob/main/LICENSE) for more information.
 
 <!-- CONTACT -->
 ## Contact 
@@ -170,7 +170,7 @@ Created by ESA's [Advanced Concepts Team](https://www.esa.int/gsp/ACT/index.html
 - Pablo Gómez - `pablo.gomez at esa.int`
 - Gabriele Meoni - `gabriele.meoni at esa.int`
 
-Project Link: [https://github.com/esa/torchquad](https://github.com/esa/torchquad)
+Project Link: [https://www.esa.int/gsp/ACT/projects/semisupervised/](https://www.esa.int/gsp/ACT/projects/semisupervised/)
 
 
 
