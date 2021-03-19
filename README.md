@@ -1,3 +1,5 @@
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/msmatch-semi-supervised-multispectral-scene/image-classification-on-eurosat)](https://paperswithcode.com/sota/image-classification-on-eurosat?p=msmatch-semi-supervised-multispectral-scene)
+
 # MSMatch
 Semi-Supervised Multispectral Scene Classification with Few Labels
 
