@@ -68,9 +68,9 @@ def get_transform(mean, std, train=True):
     if train:
         return transforms.Compose(
             [
-                transforms.ToTensor(),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomAffine(0,translate=(0,0.125)),
+                transforms.ToTensor(),
                 transforms.Normalize(mean, std),
             ]
         )
