@@ -111,14 +111,14 @@ The repository is structured as follows:
 
 To train a model on EuroSAT RGB by using EfficientNet B0 from scratch,  you can use: 
 ```
-python train.py --dataset eurosat_rgb --net efficientnet_b0
+python train.py --dataset eurosat_rgb --net efficientnet-b0
 ```
 
 `--net ` can be used to specify the EfficientNet model, whilst `--dataset` can be used to specify the dataset. Use `eurosat_rgb` for EuroSAT RGB and `eurosat_ms` for EuroSAT MS dataset.
 
 Instead of starting the training from scratch, it is possible exploit a model pretrained on ImageNet. To do it,  you can use: 
 ```
-python train.py --dataset eurosat_rgb --net efficientnet_b0 --pretrained
+python train.py --dataset eurosat_rgb --net efficientnet-b0 --pretrained
 ```
 
 `--net ` can be used to specify the EfficientNet model, whilst `--dataset` can be used to specify the dataset. Use `eurosat_rgb` for EuroSAT RGB and `eurosat_ms` for EuroSAT MS dataset.
