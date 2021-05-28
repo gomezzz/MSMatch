@@ -14,7 +14,7 @@ class AIDDataset(torch.utils.data.Dataset):
     """AID dataset. By default resized to 256,256"""
 
     def __init__(
-        self, train, root_dir="data/AID/", transform=None, seed=42, resize_to=(256, 256)
+        self, train, root_dir="data/AID/", transform=None, seed=42, resize_to=(224, 224)
     ):
         """
         Args:

@@ -14,7 +14,7 @@ class UCMDataset(torch.utils.data.Dataset):
     """UCM dataset."""
 
     def __init__(
-        self, train, root_dir="data/UCMerced_LandUse/Images/", transform=None, seed=42
+        self, train, root_dir="data/UCMerced_LandUse/Images/", transform=None, seed=42, resize_to=(224, 224)
     ):
         """
         Args:
@@ -23,9 +23,10 @@ class UCMDataset(torch.utils.data.Dataset):
             transform (callable, optional): Optional transform to be applied
                 on a sample.
             seed (int): seed used for train/test split
+            resize_to (int tuple): target (width,height)
         """
         self.seed = seed
-        self.size = [256, 256]
+        self.size = resize_to
         self.num_channels = 3
         self.num_classes = 21
         self.root_dir = root_dir

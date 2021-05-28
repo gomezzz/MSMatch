@@ -2,16 +2,16 @@
 export CUDA_VISIBLE_DEVICES=3
 DEVICE=0
 FIXMATCH_FOLDER="$HOME/project/SSLRS/"
-SAVE_LOCATION="/scratch/fixmatch_results/new_runs/" #Where tensorboard output will be written
+SAVE_LOCATION="/scratch/fixmatch_results/runs_new_paper_version/" #Where tensorboard output will be written
 SAVE_NAME="efficientnet_comparison"                             #Options are wideResNet,efficientNet
-DATASET=eurosat_rgb #Dataset to use: Options are eurosat_ms, eurosat_rgb
+DATASET=aid #Dataset to use: Options are eurosat_ms, eurosat_rgb, aid, ucm
 NUM_LABELS=250
-UNLABELED_RATIO=7
-BATCH_SIZE=32
-N_EPOCH=500                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER * BATCH_SIZE / 32
+UNLABELED_RATIO=4
+BATCH_SIZE=16
+N_EPOCH=500                    #Set NUM_TRAIN_ITER = N_EPOCH * NUM_EVAL_ITER * 32 / BATCH_SIZE
 NUM_EVAL_ITER=1000            #Number of iterations 
-NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER * BATCH_SIZE/ 32))
-SEED=2
+NUM_TRAIN_ITER=$(($N_EPOCH * $NUM_EVAL_ITER * 32/ BATC_SIZE))
+SEED=0
 WEIGHT_DECAY=0.00075
 LR=0.03
 RED='\033[0;31m'
