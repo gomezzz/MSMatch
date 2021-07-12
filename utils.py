@@ -254,28 +254,66 @@ def clean_results_df(
             axis=1,
         )
     else:
-        new_df = original_df.drop(
-            labels=[
-                "batch_size",
-                "seed",
-                "use_train_model",
-                "params",
-                "Forest",
-                "AnnualCrop",
-                "HerbaceousVegetation",
-                "Highway",
-                "Industrial",
-                "Pasture",
-                "PermanentCrop",
-                "River",
-                "Residential",
-                "SeaLake",
-                "macro avg",
-                "weighted avg",
-                "data_dir",
-            ],
-            axis=1,
-        )
+        dataset_name=original_df.index[0]
+        
+        if dataset_name == "ucm":
+            new_df = original_df.drop(
+                labels=[
+                    "batch_size",
+                    "seed",
+                    "use_train_model",
+                    "params",
+                    "agricultural",
+                    "airplane",
+                    "baseballdiamond",
+                    "beach",
+                    "buildings",
+                    "chaparral", 
+                    "denseresidential",
+                    "forest",
+                    "freeway",
+                    "golfcourse",
+                    "harbor",
+                    "intersection",
+                    "mediumresidential",
+                    "mobilehomepark",
+                    "overpass",
+                    "parkinglot",
+                    "river",
+                    "runway",
+                    "sparseresidential",
+                    "storagetanks",
+                    "tenniscourt",
+                    "macro avg",
+                    "weighted avg",
+                    "data_dir",
+                ],
+                axis=1,
+            )
+            
+        else:
+            new_df = original_df.drop(
+                labels=[
+                    "batch_size",
+                    "seed",
+                    "use_train_model",
+                    "params",
+                    "Forest",
+                    "AnnualCrop",
+                    "HerbaceousVegetation",
+                    "Highway",
+                    "Industrial",
+                    "Pasture",
+                    "PermanentCrop",
+                    "River",
+                    "Residential",
+                    "SeaLake",
+                    "macro avg",
+                    "weighted avg",
+                    "data_dir",
+                ],
+                axis=1,
+            )    
 
     # Swap accuracy positions to sort it as in the final results file
     keys = new_df.columns.tolist()
