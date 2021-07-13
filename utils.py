@@ -4,6 +4,38 @@ from torch.utils.tensorboard import SummaryWriter
 from efficientnet_pytorch import EfficientNet
 import logging
 import numpy as np
+from sklearn.metrics import confusion_matrix
+from random import sample
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
+
+def plot_cmatrix(pred,labels,encoding, figsize=(8, 5),dpi=150, font_scale=1.2, save_fig_name=None):
+    cm = confusion_matrix(labels,pred)
+    sn.set(font_scale=font_scale) # for label size
+    plt.figure(figsize=figsize, dpi=dpi)
+    df_cm=pd.DataFrame(cm, index=[k for k in encoding], columns=[k for k in encoding])
+    sn.heatmap(df_cm, annot=True, linewidths=.5) # font size
+    if save_fig_name is not None:
+        sn.set_theme()
+        plt.tight_layout()
+        plt.savefig(save_fig_name)
+
+def plot_examples(images,labels,encoding, prediction=None):
+    fig = plt.figure(figsize=(8, 5), dpi=150)
+    
+    rand_indices=sample(range(len(images)), 32)
+    for idx, rand_idx in enumerate(rand_indices):
+        img = images[rand_idx]
+        ax = fig.add_subplot(4, 8, idx+1, xticks=[], yticks=[])
+        if np.max(img) > 1.5:
+            img = img / 255
+        plt.imshow(img)
+        if prediction is not None:
+            label = "GT: " + encoding[labels[rand_idx]] + "\n PR: " + encoding[prediction[rand_idx]]
+        else:
+            label = encoding[labels[rand_idx]]    
+        plt.title(str(label),fontsize=5)
 
 
 def setattr_cls_from_kwargs(cls, kwargs):
