@@ -15,7 +15,7 @@ def plot_cmatrix(pred,labels,encoding, figsize=(8, 5),dpi=150, font_scale=1.2, s
     sn.set(font_scale=font_scale) # for label size
     plt.figure(figsize=figsize, dpi=dpi)
     df_cm=pd.DataFrame(cm, index=[k for k in encoding], columns=[k for k in encoding])
-    sn.heatmap(df_cm, annot=True, linewidths=.5) # font size
+    sn.heatmap(df_cm, annot=True, linewidths=.5,fmt='g') # font size
     if save_fig_name is not None:
         sn.set_theme()
         plt.tight_layout()
