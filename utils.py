@@ -10,13 +10,25 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 
-def plot_cmatrix(pred,labels,encoding, figsize=(8, 5),dpi=150, font_scale=1.2, save_fig_name=None):
-    cm = confusion_matrix(labels,preds,normalize='true')
-    cm=np.floor(cm*10000)/100
-    sn.set(font_scale=font_scale) # for label size
+def plot_cmatrix(preds,labels,encoding, figsize=(8, 5),dpi=150, class_names_font_scale=1.2, matrix_font_size=12, save_fig_name=None):
+    if len(preds) > 1:
+        n = 0
+        for preds_seed, labels_seed in zip(preds, labels):
+            if n == 0:
+                cm = confusion_matrix(labels_seed,preds_seed,normalize='true')
+                n+=1
+            else:
+                cm+= confusion_matrix(labels_seed,preds_seed,normalize='true')
+        cm/=len(preds)
+    else:
+        cm = confusion_matrix(labels,preds,normalize='true')
+        
+    cm=np.floor(cm*1000)/10
+    sn.set(font_scale=class_names_font_scale) # for label size
     plt.figure(figsize=figsize, dpi=dpi)
     df_cm=pd.DataFrame(cm, index=[k for k in encoding], columns=[k for k in encoding])
-    sn.heatmap(df_cm, annot=True, linewidths=.5) # font size
+    labels=df_cm.applymap(lambda v: str(int(round(v))) if int(round(v)) > 0 else '')
+    sn.heatmap(df_cm, annot=labels, linewidths=.5, fmt='', annot_kws={'fontsize':matrix_font_size}) # font size
     if save_fig_name is not None:
         sn.set_theme()
         plt.tight_layout()

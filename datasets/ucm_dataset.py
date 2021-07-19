@@ -14,7 +14,7 @@ class UCMDataset(torch.utils.data.Dataset):
     """UCM dataset."""
 
     def __init__(
-        self, train, root_dir="data/UCMerced_LandUse/Images/", transform=None, seed=42, resize_to=(224, 224)
+        self, train, root_dir="/home/gabrielemeoni/project/SSLRS/data/UCMerced_LandUse/Images/", transform=None, seed=42, resize_to=(224, 224)
     ):
         """
         Args:
