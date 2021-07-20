@@ -11,6 +11,18 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 
 def plot_cmatrix(preds,labels,encoding, figsize=(8, 5),dpi=150, class_names_font_scale=1.2, matrix_font_size=12, save_fig_name=None):
+    """Plotting the confusion matrix for one or three dataset seeds. 
+
+    Args:
+        preds ([numpy array]): array containing predictions for one or three dataset seeds.
+        labels ([numpy array]):  array containing labels for one or three dataset seeds.
+        encoding ([list]): classes label encoding.
+        figsize (tuple, optional): size of the output figure. Defaults to (8, 5).
+        dpi (int, optional): Dots for inch. Defaults to 150.
+        class_names_font_scale (float, optional): Font scale for class names in the confusion matrix. Defaults to 1.2.
+        matrix_font_size (int, optional): font size of the confusion matrix numbers. Defaults to 12.
+        save_fig_name ([str], optional): output figure name. If 'None', no output figure is saved. Defaults to None.
+    """
     if len(preds) > 1:
         n = 0
         for preds_seed, labels_seed in zip(preds, labels):
@@ -35,6 +47,14 @@ def plot_cmatrix(preds,labels,encoding, figsize=(8, 5),dpi=150, class_names_font
         plt.savefig(save_fig_name)
 
 def plot_examples(images,labels,encoding, prediction=None):
+    """Plotting the first 32 image examples for a target dataset. If `prediction` is given, both predicted and expected classes are shown for each image.
+
+    Args:
+        images ([list]): list of images to plot.
+        labels ([list]): list of predicted classes.
+        encoding ([list]): classes label encoding.
+        prediction ([list], optional): List of predicted classes. Defaults to None.
+    """
     fig = plt.figure(figsize=(8, 5), dpi=150)
     
     rand_indices=sample(range(len(images)), 32)

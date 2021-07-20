@@ -13,7 +13,7 @@ from tqdm import tqdm
 class EurosatRGBDataset(torch.utils.data.Dataset):
     """EurosatRGB dataset"""
 
-    def __init__(self, train, root_dir="/home/gabrielemeoni/project/SSLRS/data/EuroSAT_RGB/", transform=None, seed=42):
+    def __init__(self, train, root_dir="data/EuroSAT_RGB/", transform=None, seed=42):
         """
         Args:
             train (bool): If true returns training set, else test
