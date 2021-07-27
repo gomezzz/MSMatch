@@ -46,19 +46,57 @@ def plot_cmatrix(preds,labels,encoding, figsize=(8, 5),dpi=150, class_names_font
         plt.tight_layout()
         plt.savefig(save_fig_name)
 
-def plot_examples(images,labels,encoding, prediction=None):
-    """Plotting the first 32 image examples for a target dataset. If `prediction` is given, both predicted and expected classes are shown for each image.
+
+def plot_examples(images,labels,encoding, figsize=(8, 5),dpi=150, labels_fontsize=5, prediction=None, save_fig_name=None):
+    """Plotting 32 randomly sampled image examples for a target dataset, ensuring that at least one image for each class is got. If `prediction` is given, both predicted and expected classes are shown for each image.
 
     Args:
         images ([list]): list of images to plot.
         labels ([list]): list of predicted classes.
         encoding ([list]): classes label encoding.
+        figsize (tuple, optional): size of the output figure. Defaults to (8, 5).
+        dpi (int, optional): Dots for inch. Defaults to 150.
+        labels_fontsize ([str]): label fontsize. Default to 5.
         prediction ([list], optional): List of predicted classes. Defaults to None.
+        save_fig_name ([str], optional): output figure name. If 'None', no output figure is saved. Defaults to None.
     """
-    fig = plt.figure(figsize=(8, 5), dpi=150)
+    def sort_x_according_to_y(x,y):
+        return [x for _,x in sorted(zip(y,x))]
     
-    rand_indices=sample(range(len(images)), 32)
-    for idx, rand_idx in enumerate(rand_indices):
+    fig = plt.figure(figsize=figsize, dpi=dpi)
+    
+    class_found=[]
+    shuffled_idx=list(np.random.permutation(len(labels)))
+    
+    labels=sort_x_according_to_y(labels, shuffled_idx)
+    images=sort_x_according_to_y(images, shuffled_idx)
+    if prediction is not None:
+        prediction=sort_x_according_to_y(prediction, shuffled_idx)
+        
+        
+    labels_idx=[]
+    class_found=[]
+
+    for l in range(len(labels)):
+        if not(labels[l] in class_found):
+            labels_idx.append(l)
+            class_found.append(labels[l])
+            
+    print("Number of different classes found:", len(class_found))
+            
+    n_to_add= 32 - len(labels_idx)
+            
+    for l in range(len(labels)):
+        if n_to_add == 0:
+            break
+            
+        if not(l in labels_idx):
+            labels_idx.append(l)
+            n_to_add-=1
+            
+    
+    #rand_indices=sample(range(len(images)), 32)
+    for idx, rand_idx in enumerate(labels_idx):
         img = images[rand_idx]
         ax = fig.add_subplot(4, 8, idx+1, xticks=[], yticks=[])
         if np.max(img) > 1.5:
@@ -68,7 +106,10 @@ def plot_examples(images,labels,encoding, prediction=None):
             label = "GT: " + encoding[labels[rand_idx]] + "\n PR: " + encoding[prediction[rand_idx]]
         else:
             label = encoding[labels[rand_idx]]    
-        plt.title(str(label),fontsize=5)
+        plt.title(str(label),fontsize=labels_fontsize)
+
+    if save_fig_name is not None:
+        plt.savefig(save_fig_name)
 
 
 def setattr_cls_from_kwargs(cls, kwargs):
