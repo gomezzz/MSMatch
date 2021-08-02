@@ -50,7 +50,7 @@ Semi-Supervised Multispectral Scene Classification with Few Labels
 ## About The Project
 
 This is the code for the paper *"MSMatch: Semi-Supervised Multispectral Scene Classification with Few Labels"* by Pablo Gómez and Gabriele Meoni, which aims to apply the state of the art of semi-supervised learning techniques to land-use and land-cover classification problems. 
-Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code builds on and extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes code to work with both the RGB and the multispectral (MS) versions of [EuroSAT](https://arxiv.org/abs/1709.00029) and [UC Merced Land Use ](http://weegee.vision.ucmerced.edu/datasets/landuse.html) (UCM) dataset.
+Currently, the repository includes an implementation of [FixMatch](https://arxiv.org/abs/2001.07685) for the training of [EfficientNet](https://arxiv.org/abs/1905.11946) Convolutional Neural Networks. The code builds on and extends the [FixMatch-pytorch](https://github.com/LeeDoYup/FixMatch-pytorch) implementation based on [PyTorch](https://pytorch.org/). Compared to the original repository, this repository includes code to work with both the RGB and the multispectral (MS) versions of [EuroSAT](https://arxiv.org/abs/1709.00029) dataset and the [UC Merced Land Use ](http://weegee.vision.ucmerced.edu/datasets/landuse.html) (UCM) dataset.
 
 ### Built With
 
