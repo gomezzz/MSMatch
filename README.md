@@ -1,4 +1,4 @@
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/msmatch-semi-supervised-multispectral-scene/image-classification-on-eurosat)](https://paperswithcode.com/sota/image-classification-on-eurosat?p=msmatch-semi-supervised-multispectral-scene)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/msmatch-semi-supervised-multispectral-scene/image-classification-on-eurosat)](https://paperswithcode.com/sota/image-classification-on-eurosat?p=msmatch-semi-supervised-multispectral-scene) [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/msmatch-semi-supervised-multispectral-scene/scene-classification-on-uc-merced-land-use)](https://paperswithcode.com/sota/scene-classification-on-uc-merced-land-use?p=msmatch-semi-supervised-multispectral-scene)
 
 # MSMatch
 Semi-Supervised Multispectral Scene Classification with Few Labels
