@@ -344,6 +344,9 @@ def _return_training_time_info(folder):
     for l in lines:
         if "model saved" in l:
             continue
+        elif "data loader keys" in l:
+            continue
+
         date_i.append(l.split(' ')[0])
         total_time_i_ms.append(l.split(' ')[1])
         prefetch_time_i_ms.append(float(l.split(' ')[22].replace(",","")))
@@ -401,7 +404,7 @@ def decode_parameters_from_path(filepath):
 
 
 def clean_results_df(
-    original_df, data_folder_name, sort_criterion="net", keep_per_class=False
+    original_df, data_folder_name, sort_criterion="net", keep_per_class=False, swap_accuracy_position=True
 ):
     """Removing unnecessary columns to save into the csv file, sorting rows according to the sort_criterion, sorting colums according to the csv file format.
 
@@ -409,7 +412,8 @@ def clean_results_df(
         original_df ([df]): original dataframe to clean.
         data_folder_name ([str]): string containing experiment results
         sort_criterion (str, optional): Default criterion for rows sorting. Defaults to "net".
-        keep_per_class (bool, optional): If True will not discard class-wise accuracy
+        keep_per_class (bool, optional): If True will not discard class-wise accuracy. Defaults to False.
+        swap_accuracy_position (bool, optional): If True, accuracy position is swapped. Defaults to True.
 
     Returns:
         [cleaned outputdata]: [df]
@@ -490,9 +494,10 @@ def clean_results_df(
             )    
 
     # Swap accuracy positions to sort it as in the final results file
-    keys = new_df.columns.tolist()
-    keys = keys[1:-1] + [keys[0]] + [keys[-1]]
-    new_df = new_df.reindex(columns=keys)
+    if swap_accuracy_position:
+        keys = new_df.columns.tolist()
+        keys = keys[1:-1] + [keys[0]] + [keys[-1]]
+        new_df = new_df.reindex(columns=keys)
 
     net = new_df["net"]
     if "pretrained" in new_df:
