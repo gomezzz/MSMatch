@@ -6,7 +6,7 @@ dependencies:
 - cudatoolkit
 - python=3.8
 - pytorch=1.7
-- torchvision
+- torchvision=0.8.2
 - tensorboard=2.3.0
 - pillow
 - tqdm
@@ -17,3 +17,4 @@ dependencies:
 - efficientnet-pytorch
 - pandas
 - albumentations
+- imgaug=0.4.0
