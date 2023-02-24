@@ -3,17 +3,21 @@ channels:
 - conda-forge
 - pytorch
 dependencies:
-- cudatoolkit
 - python=3.8
-- pytorch=1.7
-- torchvision
+- pytorch=1.7.0
+- torchvision=0.8.0
+- torchaudio=0.7.0
+- cudatoolkit=10.1
 - tensorboard=2.3.0
 - pillow
 - tqdm
-- numpy
 - scikit-image
 - scikit-learn
 - imageio
 - efficientnet-pytorch
 - pandas
-- albumentations
+- seaborn
+- albumentations=0.5.2
+- scipy
+- numpy=1.23.4
+- imgaug
