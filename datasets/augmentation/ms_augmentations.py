@@ -6,7 +6,7 @@ from imgaug import augmenters as iaaa
 
 
 def AutoContrast(img, v):
-    return iaaa.pillike.Autocontrast(cutoff=0)(image=img)["image"]
+    return iaaa.pillike.Autocontrast(cutoff=v)(image=img)
 
 
 def Brightness(img, v):
@@ -65,7 +65,7 @@ def TranslateY(img, v):
 def ms_augmentation_list():
     l = [
         # The below four don't work with multispectral images
-        # (AutoContrast, 0, 1),
+        (AutoContrast, 0, 20),
         # (Brightness, 0.05, 0.95),
         # (Color, 0.05, 0.95),
         # (Contrast, 0.05, 0.95),
