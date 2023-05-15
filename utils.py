@@ -9,6 +9,8 @@ from random import sample
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
+from datetime import datetime
+
 
 def plot_cmatrix(preds,labels,encoding, figsize=(8, 5),dpi=150, class_names_font_scale=1.2, matrix_font_size=12, save_fig_name=None):
     """Plotting the confusion matrix for one or three dataset seeds. 
@@ -275,6 +277,32 @@ def get_model_checkpoints(folderpath):
     return checkpoints, params
 
 
+def get_model_checkpoints_and_timing_info(folderpath):
+    """Returns all the latest checkpoint files, used parameters, and timing info in the below folders
+
+    Args:
+        folderpath (str): path to search (note only depth 1 below will be searched.)
+
+    Returns:
+        list,list,list: lists of checkpoint names, params, and associated timing info.
+    """
+    # Find present models
+    folderpath = folderpath.replace("\\", "/")
+    model_files = glob.glob(folderpath + "/**/model_best.pth", recursive=True)
+    folders = [model_file.split("model_best.pth")[0] for model_file in model_files]
+
+    checkpoints = []
+    timing_info = []
+    params = []
+    for file, folder in zip(model_files, folders):
+        checkpoints.append(file)
+        params.append(decode_parameters_from_path(folder))
+        timing_info.append(_return_training_time_info(folder))
+
+    return checkpoints, params, timing_info
+
+
+
 def _read_best_iteration_number(folder):
     """Reads from the run log file at which iteration the best result was obtained.
 
@@ -292,6 +320,49 @@ def _read_best_iteration_number(folder):
     # Fine iteration number
     iteration_str = second_last_line.split(", at ")[1]
     return int(iteration_str.split(" iters")[0])
+
+
+def _return_training_time_info(folder):
+    """Return average augmentation and runtime for iteration [ms] and total training time [s] from the run log file.
+
+    Args:
+        folder (str): results folder
+
+    Returns:
+        float: average augmentation time per iteration [ms].
+        float: average runtime (forward + backward) per iteration [ms].
+        float: total training time [s].
+    """
+    with open(folder + "log.txt", "r") as file:
+        lines = file.read().splitlines()[5:-2]
+    
+    date_i=[]
+    total_time_i_ms=[]
+    run_time_i_ms=[]
+    prefetch_time_i_ms=[]
+    t=0
+    for l in lines:
+        if "model saved" in l:
+            continue
+        elif "data loader keys" in l:
+            continue
+
+        date_i.append(l.split(' ')[0])
+        total_time_i_ms.append(l.split(' ')[1])
+        prefetch_time_i_ms.append(float(l.split(' ')[22].replace(",","")))
+        run_time_i_ms.append(float(l.split(' ')[24].replace(",","")))
+        t+=1
+        
+    start_date=date_i[0].split('-')
+    last_date=date_i[-1].split('-')
+    
+    start_time=total_time_i_ms[0].split(':')
+    last_time=total_time_i_ms[-1].split(':')
+    start_date_tot=datetime(int(start_date[0][1:]), int(start_date[1]), int(start_date[2]), int(start_time[0]), int(start_time[1]), int(start_time[2][:2]))
+    last_date_tot=datetime(int(last_date[0][1:]), int(last_date[1]), int(last_date[2]), int(last_time[0]), int(last_time[1]), int(last_time[2][:2]))
+    training_time=last_date_tot-start_date_tot
+    training_time_s = int(training_time.total_seconds())
+    return np.mean(np.array(prefetch_time_i_ms)), np.mean(np.array(run_time_i_ms)), training_time_s
 
 
 def decode_parameters_from_path(filepath):
@@ -333,7 +404,7 @@ def decode_parameters_from_path(filepath):
 
 
 def clean_results_df(
-    original_df, data_folder_name, sort_criterion="net", keep_per_class=False
+    original_df, data_folder_name, sort_criterion="net", keep_per_class=False, swap_accuracy_position=True
 ):
     """Removing unnecessary columns to save into the csv file, sorting rows according to the sort_criterion, sorting colums according to the csv file format.
 
@@ -341,7 +412,8 @@ def clean_results_df(
         original_df ([df]): original dataframe to clean.
         data_folder_name ([str]): string containing experiment results
         sort_criterion (str, optional): Default criterion for rows sorting. Defaults to "net".
-        keep_per_class (bool, optional): If True will not discard class-wise accuracy
+        keep_per_class (bool, optional): If True will not discard class-wise accuracy. Defaults to False.
+        swap_accuracy_position (bool, optional): If True, accuracy position is swapped. Defaults to True.
 
     Returns:
         [cleaned outputdata]: [df]
@@ -422,9 +494,10 @@ def clean_results_df(
             )    
 
     # Swap accuracy positions to sort it as in the final results file
-    keys = new_df.columns.tolist()
-    keys = keys[1:-1] + [keys[0]] + [keys[-1]]
-    new_df = new_df.reindex(columns=keys)
+    if swap_accuracy_position:
+        keys = new_df.columns.tolist()
+        keys = keys[1:-1] + [keys[0]] + [keys[-1]]
+        new_df = new_df.reindex(columns=keys)
 
     net = new_df["net"]
     if "pretrained" in new_df:
