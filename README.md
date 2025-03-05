@@ -160,7 +160,7 @@ The project is open to community contributions. Feel free to open an [issue](htt
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL-3.0 License. See [LICENSE](https://github.com/gomezzz/MSMatch/blob/main/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/gomezzz/MSMatch/blob/main/LICENSE) for more information.
 
 <!-- CONTACT -->
 ## Contact 
